@@ -1,3 +1,8 @@
+import java.util.Scanner;
+
+/**
+ * Starts Altair and responds to commands entered by the user.
+ */
 public class Altair {
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
@@ -13,7 +18,21 @@ public class Altair {
         System.out.println("Greetings, I am Altair.");
         System.out.println("How may I help you?");
         System.out.println(separator);
-        System.out.println("Goodbye. Let me know when you need me again.");
-        System.out.println(separator);
+
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String command = scanner.nextLine();
+
+            System.out.println(separator);
+
+            if (command.trim().equals("bye")) {
+                System.out.println("    Goodbye. Let me know when you need me again.");
+                System.out.println(separator);
+                break;
+            }
+
+            System.out.println("    " + command);
+            System.out.println(separator);
+        }
     }
 }
