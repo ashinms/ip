@@ -1,5 +1,8 @@
 /**
- * Represents a task and whether the user has completed it.
+ * The base type for every task in the task list.
+ *
+ * <p>Subclasses inherit the shared description and completion state while
+ * customizing the type marker and any date/time details they display.</p>
  */
 public class Task {
     /** The text entered by the user for this task. */
@@ -44,5 +47,24 @@ public class Task {
     /** Marks this task as not done. */
     public void markAsNotDone() {
         isDone = false;
+    }
+
+    /**
+     * Returns the one-letter marker used for this task type.
+     *
+     * @return {@code T} for a basic task
+     */
+    protected String getTypeIcon() {
+        return "T";
+    }
+
+    /**
+     * Formats the task for the list and completion messages.
+     *
+     * @return the task type, completion state, and description
+     */
+    @Override
+    public String toString() {
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
     }
 }

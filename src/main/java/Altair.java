@@ -40,8 +40,7 @@ public class Altair {
             if (command.trim().equals("list")) {
                 System.out.println("     Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println("     " + (i + 1) + ".[" + tasks[i].getStatusIcon()
-                            + "] " + tasks[i].getDescription());
+                    System.out.println("     " + (i + 1) + "." + tasks[i]);
                 }
                 System.out.println(separator);
             } else if (command.trim().equals("mark") || command.trim().startsWith("mark ")) {
@@ -49,16 +48,103 @@ public class Altair {
             } else if (command.trim().equals("unmark") || command.trim().startsWith("unmark ")) {
                 taskCount = unmarkTask(command, tasks, taskCount, separator);
             } else if (taskCount < MAX_TASKS) {
-                tasks[taskCount] = new Task(command);
-                taskCount++;
-                System.out.println("    added: " + command);
-                System.out.println(separator);
+                Task newTask = createTask(command);
+                if (newTask != null) {
+                    tasks[taskCount] = newTask;
+                    taskCount++;
+                    printAddedTask(newTask, taskCount, separator);
+                }
             }
 
 
 
 
         }
+    }
+
+    /**
+     * Creates the task represented by a user command.
+     *
+     * <p>A plain command remains a convenient shorthand for a ToDo. Typed
+     * commands use markers so descriptions and date/time strings may contain
+     * spaces.</p>
+     *
+     * @param command the complete command entered by the user
+     * @return the new task, or {@code null} when a typed command is malformed
+     */
+    private static Task createTask(String command) {
+        String trimmed = command.trim();
+
+        if (trimmed.equals("todo") || trimmed.startsWith("todo ")) {
+            String description = textAfterCommand(trimmed, "todo");
+            if (description.isEmpty()) {
+                printUsage("todo <description>");
+                return null;
+            }
+            return new Todo(description);
+        }
+
+        if (trimmed.equals("deadline") || trimmed.startsWith("deadline ")) {
+            String remainder = textAfterCommand(trimmed, "deadline");
+            int byIndex = remainder.indexOf(" /by ");
+            if (byIndex <= 0) {
+                printUsage("deadline <description> /by <date/time>");
+                return null;
+            }
+
+            String description = remainder.substring(0, byIndex).trim();
+            String by = remainder.substring(byIndex + 5).trim();
+            if (description.isEmpty() || by.isEmpty()) {
+                printUsage("deadline <description> /by <date/time>");
+                return null;
+            }
+            return new Deadline(description, by);
+        }
+
+        if (trimmed.equals("event") || trimmed.startsWith("event ")) {
+            String remainder = textAfterCommand(trimmed, "event");
+            int fromIndex = remainder.indexOf(" /from ");
+            int toIndex = remainder.indexOf(" /to ");
+            if (fromIndex <= 0 || toIndex <= fromIndex + 7) {
+                printUsage("event <description> /from <date/time> /to <date/time>");
+                return null;
+            }
+
+            String description = remainder.substring(0, fromIndex).trim();
+            String from = remainder.substring(fromIndex + 7, toIndex).trim();
+            String to = remainder.substring(toIndex + 5).trim();
+            if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                printUsage("event <description> /from <date/time> /to <date/time>");
+                return null;
+            }
+            return new Event(description, from, to);
+        }
+
+        return new Todo(command);
+    }
+
+    /**
+     * Returns the part of a command after its command word.
+     *
+     * @param command the trimmed command
+     * @param commandWord the command word to remove
+     * @return the remaining text
+     */
+    private static String textAfterCommand(String command, String commandWord) {
+        return command.substring(commandWord.length()).trim();
+    }
+
+    /** Prints the syntax expected for a malformed typed task command. */
+    private static void printUsage(String usage) {
+        System.out.println("    Please use: " + usage);
+    }
+
+    /** Prints the common confirmation shown after adding any task type. */
+    private static void printAddedTask(Task task, int taskCount, String separator) {
+        System.out.println("    Got it. I've added this task:");
+        System.out.println("      " + task);
+        System.out.println("    Now you have " + taskCount + " tasks in the list.");
+        System.out.println(separator);
     }
 
     /**
@@ -90,7 +176,7 @@ public class Altair {
             Task task = tasks[taskNumber - 1];
             task.markAsDone();
             System.out.println("     Nice! I've marked this task as done:");
-            System.out.println("       [" + task.getStatusIcon() + "] " + task.getDescription());
+            System.out.println("       " + task);
         } catch (NumberFormatException exception) {
             System.out.println("    Please use a valid task number.");
         }
@@ -127,7 +213,7 @@ public class Altair {
             Task task = tasks[taskNumber - 1];
             task.markAsNotDone();
             System.out.println("     OK, I've marked this task as not done yet:");
-            System.out.println("       [" + task.getStatusIcon() + "] " + task.getDescription());
+            System.out.println("       " + task);
         } catch (NumberFormatException exception) {
             System.out.println("    Please use a valid task number.");
         }
