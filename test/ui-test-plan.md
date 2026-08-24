@@ -213,3 +213,47 @@ ____________________________________________________________
     Goodbye. Let me know when you need me again.
 ____________________________________________________________
 ```
+
+## Test case 5: Explain incomplete and unknown commands
+
+Aim: Verify that an incomplete ToDo command and an unrecognized command are handled without terminating the chatbot.
+
+### Step 1: Enter invalid commands and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+todo
+blah
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    I'm afraid the description of a todo cannot be empty.
+____________________________________________________________
+____________________________________________________________
+    Perhaps you could try again? I do not understand your command.
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
