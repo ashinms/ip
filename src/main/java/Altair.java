@@ -46,6 +46,8 @@ public class Altair {
                 System.out.println(separator);
             } else if (command.trim().equals("mark") || command.trim().startsWith("mark ")) {
                 taskCount = markTask(command, tasks, taskCount, separator);
+            } else if (command.trim().equals("unmark") || command.trim().startsWith("unmark ")) {
+                taskCount = unmarkTask(command, tasks, taskCount, separator);
             } else if (taskCount < MAX_TASKS) {
                 tasks[taskCount] = new Task(command);
                 taskCount++;
@@ -97,6 +99,43 @@ public class Altair {
     }
 
     /**
+     * Marks the task selected by an {@code unmark <number>} command as not done.
+     * Invalid unmark commands are reported and do not become new tasks.
+     *
+     * @param command the command entered by the user
+     * @param tasks the current task array
+     * @param taskCount the number of tasks currently stored
+     * @param separator the line used to separate responses
+     * @return the unchanged task count
+     */
+    private static int unmarkTask(String command, Task[] tasks, int taskCount, String separator) {
+        String[] parts = command.trim().split("\\s+");
+        if (parts.length != 2) {
+            System.out.println("    Please use: unmark <task number>");
+            System.out.println(separator);
+            return taskCount;
+        }
+
+        try {
+            int taskNumber = Integer.parseInt(parts[1]);
+            if (taskNumber < 1 || taskNumber > taskCount) {
+                System.out.println("    That task number is not in your list.");
+                System.out.println(separator);
+                return taskCount;
+            }
+
+            Task task = tasks[taskNumber - 1];
+            task.markAsNotDone();
+            System.out.println("     OK, I've marked this task as not done yet:");
+            System.out.println("       [" + task.getStatusIcon() + "] " + task.getDescription());
+        } catch (NumberFormatException exception) {
+            System.out.println("    Please use a valid task number.");
+        }
+        System.out.println(separator);
+        return taskCount;
+    }
+
+    /**
      * Represents a task and whether the user has completed it.
      */
     private static class Task {
@@ -137,6 +176,11 @@ public class Altair {
         /** Marks this task as done. */
         void markAsDone() {
             done = true;
+        }
+
+        /** Marks this task as not done. */
+        void markAsNotDone() {
+            done = false;
         }
     }
 }
