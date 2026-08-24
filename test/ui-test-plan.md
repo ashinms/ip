@@ -78,12 +78,12 @@ Greetings, I am Altair.
 How may I help you?
 ____________________________________________________________
 ____________________________________________________________
-    Got it. I've added this task:
+    Copy. Your task has been added:
       [T][ ] buy milk
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-     Here are the tasks in your list:
+     The following are your tasks
      1.[T][ ] buy milk
 ____________________________________________________________
 ____________________________________________________________
@@ -128,16 +128,16 @@ Greetings, I am Altair.
 How may I help you?
 ____________________________________________________________
 ____________________________________________________________
-    Got it. I've added this task:
+    Copy. Your task has been added:
       [T][ ] read book
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-     Nice! I've marked this task as done:
+     Task marked as completed:
        [T][X] read book
 ____________________________________________________________
 ____________________________________________________________
-     Here are the tasks in your list:
+     The following are your tasks
      1.[T][X] read book
 ____________________________________________________________
 ____________________________________________________________
@@ -145,7 +145,7 @@ ____________________________________________________________
        [T][ ] read book
 ____________________________________________________________
 ____________________________________________________________
-     Here are the tasks in your list:
+     The following are your tasks
      1.[T][ ] read book
 ____________________________________________________________
 ____________________________________________________________
@@ -155,7 +155,7 @@ ____________________________________________________________
 
 ## Test case 4: Add all three task types
 
-Aim: Verify that ToDos, Deadlines, and Events are stored together in a polymorphic `Task[]` and retain their string date/time details.
+Aim: Verify that ToDos, Deadlines, and Events are stored together in a polymorphic collection and retain their string date/time details.
 
 ### Step 1: Add typed tasks, list, and exit
 
@@ -189,22 +189,22 @@ Greetings, I am Altair.
 How may I help you?
 ____________________________________________________________
 ____________________________________________________________
-    Got it. I've added this task:
+    Copy. Your task has been added:
       [T][ ] borrow book
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-    Got it. I've added this task:
+    Copy. Your task has been added:
       [D][ ] return book (by: Sunday)
     Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-    Got it. I've added this task:
+    Copy. Your task has been added:
       [E][ ] project meeting (from: Mon 2pm to: 4pm)
     Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-     Here are the tasks in your list:
+     The following are your tasks
      1.[T][ ] borrow book
      2.[D][ ] return book (by: Sunday)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
@@ -214,7 +214,73 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
-## Test case 5: Explain incomplete and unknown commands
+## Test case 5: Delete a task
+
+Aim: Verify that `delete <task number>` removes the selected task and updates the task count.
+
+### Step 1: Delete, list, and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+delete 3
+list
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] read book
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [D][ ] return book (by: June 6th)
+    Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     The following are your tasks
+     1.[T][ ] read book
+     2.[D][ ] return book (by: June 6th)
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 6: Explain incomplete and unknown commands
 
 Aim: Verify that an incomplete ToDo command and an unrecognized command are handled without terminating the chatbot.
 
@@ -251,7 +317,7 @@ ____________________________________________________________
     I'm afraid the description of a todo cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
-    Perhaps you could try again? I do not understand your command.
+    I do not understand your command. Try again, perhaps?
 ____________________________________________________________
 ____________________________________________________________
     Goodbye. Let me know when you need me again.
