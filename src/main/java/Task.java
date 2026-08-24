@@ -50,12 +50,21 @@ public class Task {
     }
 
     /**
+     * Returns the category of this task.
+     *
+     * @return the task category
+     */
+    protected TaskType getTaskType() {
+        return TaskType.TODO;
+    }
+
+    /**
      * Returns the one-letter marker used for this task type.
      *
-     * @return {@code T} for a basic task
+     * @return the task type marker
      */
     protected String getTypeIcon() {
-        return "T";
+        return getTaskType().getIcon();
     }
 
     /**

@@ -31,23 +31,25 @@ public class Altair {
             System.out.println(separator);
 
             try {
-                if (command.trim().equals("bye")) {
+                CommandType commandType = CommandType.from(command);
+
+                if (commandType == CommandType.BYE) {
                     System.out.println("    Goodbye. Let me know when you need me again.");
                     System.out.println(separator);
                     break;
                 }
 
-                if (command.trim().equals("list")) {
+                if (commandType == CommandType.LIST) {
                     System.out.println("     The following are your tasks");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println("     " + (i + 1) + "." + tasks.get(i));
                     }
                     System.out.println(separator);
-                } else if (command.trim().equals("mark") || command.trim().startsWith("mark ")) {
+                } else if (commandType == CommandType.MARK) {
                     markTask(command, tasks, separator);
-                } else if (command.trim().equals("unmark") || command.trim().startsWith("unmark ")) {
+                } else if (commandType == CommandType.UNMARK) {
                     unmarkTask(command, tasks, separator);
-                } else if (command.trim().equals("delete") || command.trim().startsWith("delete ")) {
+                } else if (commandType == CommandType.DELETE) {
                     deleteTask(command, tasks, separator);
                 } else {
                     Task newTask = createTask(command);
@@ -74,7 +76,8 @@ public class Altair {
     private static Task createTask(String command) throws AltairException {
         String trimmed = command.trim();
 
-        if (trimmed.equals("todo") || trimmed.startsWith("todo ")) {
+        switch (CommandType.from(trimmed)) {
+        case TODO: {
             String description = textAfterCommand(trimmed, "todo");
             if (description.isEmpty()) {
                 throw new AltairException("I'm afraid the description of a todo cannot be empty.");
@@ -82,7 +85,7 @@ public class Altair {
             return new Todo(description);
         }
 
-        if (trimmed.equals("deadline") || trimmed.startsWith("deadline ")) {
+        case DEADLINE: {
             String remainder = textAfterCommand(trimmed, "deadline");
             int byIndex = remainder.indexOf(" /by ");
             if (remainder.isEmpty() || byIndex == 0 || remainder.startsWith("/by ") || remainder.equals("/by")) {
@@ -103,7 +106,7 @@ public class Altair {
             return new Deadline(description, by);
         }
 
-        if (trimmed.equals("event") || trimmed.startsWith("event ")) {
+        case EVENT: {
             String remainder = textAfterCommand(trimmed, "event");
             int fromIndex = remainder.indexOf(" /from ");
             int toIndex = remainder.indexOf(" /to ");
@@ -127,7 +130,9 @@ public class Altair {
             return new Event(description, from, to);
         }
 
-        throw new AltairException("I do not understand your command. Try again, perhaps?");
+        default:
+            throw new AltairException("I do not understand your command. Try again, perhaps?");
+        }
     }
 
     /**
