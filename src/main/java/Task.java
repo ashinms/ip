@@ -68,6 +68,15 @@ public class Task {
     }
 
     /**
+     * Formats this task for the on-disk task list.
+     *
+     * @return the task type, completion state, and description separated by pipes
+     */
+    public String toFileString() {
+        return getTypeIcon() + " | " + (isDone ? "1" : "0") + " | " + description;
+    }
+
+    /**
      * Formats the task for the list and completion messages.
      *
      * @return the task type, completion state, and description
