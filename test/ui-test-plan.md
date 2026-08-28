@@ -8,7 +8,7 @@ This plan tests the interactive console behavior of `Altair`.
 - Output comparison: exact, including spaces and line breaks
 - Test runner: `.codex/skills/test-ui/scripts/run_ui_tests.py`
 - Preparation: Compile from the project root with `javac -d out/production/ip src/main/java/*.java` before running the plan.
-- Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event date/time details are stored as one combined field.
+- Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
 - Isolation: Test cases 1–9 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
 - Missing data: Starting without `./data/duke.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
 - Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace.
@@ -172,7 +172,7 @@ ____________________________________________________________
 
 ## Test case 4: Add all three task types
 
-Aim: Verify that ToDos, Deadlines, and Events display their type and date/time details correctly in one list.
+Aim: Verify that ToDos, Deadlines, and Events display their type and formatted dates correctly in one list.
 
 ### Step 1: Add typed tasks, list, clean up, and exit
 
@@ -186,8 +186,8 @@ Inputs:
 
 ```text
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-10-15
+event project meeting /from 2019-10-16 /to 2019-10-17
 list
 delete 3
 delete 2
@@ -215,28 +215,28 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
     Copy. Your task has been added:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Oct 15 2019)
     Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Copy. Your task has been added:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Oct 16 2019 to: Oct 17 2019)
     Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
      1.[T][ ] borrow book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Oct 15 2019)
+     3.[E][ ] project meeting (from: Oct 16 2019 to: Oct 17 2019)
 ____________________________________________________________
 ____________________________________________________________
     Noted. I've removed this task:
-      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+      [E][ ] project meeting (from: Oct 16 2019 to: Oct 17 2019)
     Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] return book (by: Sunday)
+      [D][ ] return book (by: Oct 15 2019)
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -265,8 +265,8 @@ Inputs:
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 /to 2019-08-07
 delete 2
 list
 delete 2
@@ -294,27 +294,27 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
     Copy. Your task has been added:
-      [D][ ] return book (by: June 6th)
+      [D][ ] return book (by: Jun 06 2019)
     Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Copy. Your task has been added:
-      [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+      [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Noted. I've removed this task:
-      [D][ ] return book (by: June 6th)
+      [D][ ] return book (by: Jun 06 2019)
     Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
      1.[T][ ] read book
-     2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     2.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
 ____________________________________________________________
 ____________________________________________________________
     Noted. I've removed this task:
-      [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+      [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -387,9 +387,9 @@ Inputs:
 
 ```text
 deadline return book
-deadline /by Sunday
-event project meeting /from Mon 2pm
-event /from Mon 2pm /to 4pm
+deadline /by 2019-10-15
+event project meeting /from 2019-10-16
+event /from 2019-10-16 /to 2019-10-17
 list
 bye
 ```
@@ -408,13 +408,13 @@ Greetings, I am Altair.
 How may I help you?
 ____________________________________________________________
 ____________________________________________________________
-    A deadline needs a date or time after /by.
+    A deadline needs a date after /by.
 ____________________________________________________________
 ____________________________________________________________
     I'm afraid the description of a deadline cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
-    An event needs /from and /to date or time details.
+    An event needs /from and /to dates.
 ____________________________________________________________
 ____________________________________________________________
     I'm afraid the description of an event cannot be empty.

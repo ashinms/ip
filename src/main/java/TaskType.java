@@ -2,13 +2,13 @@
  * The fixed categories of tasks supported by Altair.
  */
 public enum TaskType {
-    /** A basic task without date or time details. */
+    /** A basic task without scheduling details. */
     TODO("T"),
 
-    /** A task with a completion date or time. */
+    /** A task with a completion date. */
     DEADLINE("D"),
 
-    /** A task with start and end date or time details. */
+    /** A task with start and end dates. */
     EVENT("E");
 
     private final String icon;
