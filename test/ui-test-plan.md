@@ -8,6 +8,10 @@ This plan tests the interactive console behavior of `Altair`.
 - Output comparison: exact, including spaces and line breaks
 - Test runner: `.codex/skills/test-ui/scripts/run_ui_tests.py`
 - Preparation: Compile from the project root with `javac -d out/production/ip src/main/java/*.java` before running the plan.
+- Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event date/time details are stored as one combined field.
+- Isolation: Test cases 1–9 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
+- Missing data: Starting without `./data/duke.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
+- Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace.
 
 ## Test case 1: Start and exit
 
@@ -49,7 +53,7 @@ ____________________________________________________________
 
 Aim: Verify that the `todo` command creates a ToDo task and that the list displays its type and status markers.
 
-### Step 1: Add, list, and exit
+### Step 1: Add, list, delete, and exit
 
 Command:
 
@@ -62,6 +66,7 @@ Inputs:
 ```text
 todo buy milk
 list
+delete 1
 bye
 ```
 
@@ -88,6 +93,11 @@ ____________________________________________________________
      1.[T][ ] buy milk
 ____________________________________________________________
 ____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] buy milk
+    Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
     Goodbye. Let me know when you need me again.
 ____________________________________________________________
 ```
@@ -96,7 +106,7 @@ ____________________________________________________________
 
 Aim: Verify that marking and unmarking update the displayed completion status of a ToDo task.
 
-### Step 1: Toggle task status and exit
+### Step 1: Toggle task status, clean up, and exit
 
 Command:
 
@@ -112,6 +122,7 @@ mark 1
 list
 unmark 1
 list
+delete 1
 bye
 ```
 
@@ -150,6 +161,11 @@ ____________________________________________________________
      1.[T][ ] read book
 ____________________________________________________________
 ____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] read book
+    Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
     Goodbye. Let me know when you need me again.
 ____________________________________________________________
 ```
@@ -158,7 +174,7 @@ ____________________________________________________________
 
 Aim: Verify that ToDos, Deadlines, and Events display their type and date/time details correctly in one list.
 
-### Step 1: Add typed tasks, list, and exit
+### Step 1: Add typed tasks, list, clean up, and exit
 
 Command:
 
@@ -173,6 +189,9 @@ todo borrow book
 deadline return book /by Sunday
 event project meeting /from Mon 2pm /to 4pm
 list
+delete 3
+delete 2
+delete 1
 bye
 ```
 
@@ -211,6 +230,21 @@ ____________________________________________________________
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
+    Noted. I've removed this task:
+      [E][ ] project meeting (from: Mon 2pm to: 4pm)
+    Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [D][ ] return book (by: Sunday)
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] borrow book
+    Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
     Goodbye. Let me know when you need me again.
 ____________________________________________________________
 ```
@@ -219,7 +253,7 @@ ____________________________________________________________
 
 Aim: Verify that `delete <task number>` removes a selected middle task, updates the task count, and renumbers later tasks.
 
-### Step 1: Delete, list, and exit
+### Step 1: Delete, list, clean up, and exit
 
 Command:
 
@@ -235,6 +269,8 @@ deadline return book /by June 6th
 event project meeting /from Aug 6th 2pm /to 4pm
 delete 2
 list
+delete 2
+delete 1
 bye
 ```
 
@@ -275,6 +311,16 @@ ____________________________________________________________
      The following are your tasks
      1.[T][ ] read book
      2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] read book
+    Now you have 0 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Goodbye. Let me know when you need me again.
@@ -385,7 +431,7 @@ ____________________________________________________________
 
 Aim: Verify that malformed, non-numeric, and out-of-range task numbers are rejected while the existing task remains unchanged.
 
-### Step 1: Enter invalid task-number commands, list, and exit
+### Step 1: Enter invalid task-number commands, list, clean up, and exit
 
 Command:
 
@@ -404,6 +450,7 @@ delete
 delete second
 delete 2
 list
+delete 1
 bye
 ```
 
@@ -446,6 +493,11 @@ ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
      1.[T][ ] read book
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] read book
+    Now you have 0 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Goodbye. Let me know when you need me again.
@@ -502,6 +554,246 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 10: Save a changed task list
+
+Aim: Verify that a happy-path task-list change sequence completes normally while persistence is exercised. After this UI session, confirm that `./data/duke.txt` contains the final task state.
+
+### Step 1: Add, mark, and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+todo write persistence test
+mark 1
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] write persistence test
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Task marked as completed:
+       [T][X] write persistence test
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 11: Load a saved task list
+
+Aim: Verify that a task saved by the previous chatbot process is restored when the chatbot starts again.
+
+### Step 1: Load, list, delete, and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+list
+delete 1
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+     The following are your tasks
+     1.[T][X] write persistence test
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][X] write persistence test
+    Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 12: Accept flexible command whitespace and case
+
+Aim: Verify that commands remain usable with uppercase keywords, repeated spaces, and tab-separated task numbers.
+
+### Step 1: Add, toggle, delete, and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+TODO   buy milk
+MARK	1
+UNMARK	1
+delete 1
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] buy milk
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Task marked as completed:
+       [T][X] buy milk
+____________________________________________________________
+____________________________________________________________
+     OK, I've marked this task as not done yet:
+       [T][ ] buy milk
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] buy milk
+    Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 13: Reject unrepresentable task details
+
+Aim: Verify that the file delimiter is rejected in user task details instead of producing an unreadable saved row.
+
+### Step 1: Reject the task, list, and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+todo bad | data
+list
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Task details cannot contain the '|' character.
+____________________________________________________________
+____________________________________________________________
+     The following are your tasks
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 14: Reject arguments on simple commands
+
+Aim: Verify that `bye` and `list` reject unexpected arguments instead of silently performing a different command.
+
+### Step 1: Reject extra arguments and exit
+
+Command:
+
+```text
+java -cp out/production/ip Altair
+```
+
+Inputs:
+
+```text
+bye now
+list now
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Please use: bye.
+____________________________________________________________
+____________________________________________________________
+    Please use: list.
 ____________________________________________________________
 ____________________________________________________________
     Goodbye. Let me know when you need me again.

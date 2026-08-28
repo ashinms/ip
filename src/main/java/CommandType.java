@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 /**
  * The commands that Altair understands at the start of a user input line.
  */
@@ -42,10 +44,14 @@ public enum CommandType {
      * @return the matching command type, or {@link #UNKNOWN}
      */
     public static CommandType from(String command) {
-        String trimmed = command.trim();
+        String trimmed = command == null ? "" : command.trim().toLowerCase(Locale.ROOT);
         for (CommandType type : values()) {
-            if (!type.keyword.isEmpty()
-                    && (trimmed.equals(type.keyword) || trimmed.startsWith(type.keyword + " "))) {
+            boolean hasCommandWord = !type.keyword.isEmpty() && trimmed.startsWith(type.keyword);
+            boolean endsAfterCommand = trimmed.length() == type.keyword.length();
+            boolean hasWhitespaceAfterCommand = hasCommandWord
+                    && trimmed.length() > type.keyword.length()
+                    && Character.isWhitespace(trimmed.charAt(type.keyword.length()));
+            if (hasCommandWord && (endsAfterCommand || hasWhitespaceAfterCommand)) {
                 return type;
             }
         }
