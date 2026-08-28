@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +20,9 @@ public class Altair {
 
     /** The file where the current task list is stored between changes. */
     private static final Path TASKS_FILE = Path.of("./data/duke.txt");
+
+    /** The date format accepted in commands and used in saved task details. */
+    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
@@ -92,7 +98,7 @@ public class Altair {
     /**
      * Creates the task represented by a user command.
      *
-     * <p>Typed commands use markers so descriptions and date/time strings may
+     * <p>Typed commands use markers so descriptions and date strings may
      * contain spaces.</p>
      *
      * @param command the complete command entered by the user
@@ -120,20 +126,20 @@ public class Altair {
                 throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
             }
             if (byIndex < 0) {
-                throw new AltairException("A deadline needs a date or time after /by.");
+                throw new AltairException("A deadline needs a date after /by.");
             }
 
             String description = joinWords(words, 0, byIndex);
-            String by = joinWords(words, byIndex + 1, words.length);
+            String byText = joinWords(words, byIndex + 1, words.length);
             if (description.isEmpty()) {
                 throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
             }
-            if (by.isEmpty()) {
-                throw new AltairException("A deadline needs a date or time after /by.");
+            if (byText.isEmpty()) {
+                throw new AltairException("A deadline needs a date after /by.");
             }
             validateStorableText(description);
-            validateStorableText(by);
-            return new Deadline(description, by);
+            validateStorableText(byText);
+            return new Deadline(description, parseDate(byText, "A deadline date"));
         }
 
         case EVENT: {
@@ -145,22 +151,23 @@ public class Altair {
                 throw new AltairException("I'm afraid the description of an event cannot be empty.");
             }
             if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex + 1) {
-                throw new AltairException("An event needs /from and /to date or time details.");
+                throw new AltairException("An event needs /from and /to dates.");
             }
 
             String description = joinWords(words, 0, fromIndex);
-            String from = joinWords(words, fromIndex + 1, toIndex);
-            String to = joinWords(words, toIndex + 1, words.length);
+            String fromText = joinWords(words, fromIndex + 1, toIndex);
+            String toText = joinWords(words, toIndex + 1, words.length);
             if (description.isEmpty()) {
                 throw new AltairException("I'm afraid the description of an event cannot be empty.");
             }
-            if (from.isEmpty() || to.isEmpty()) {
-                throw new AltairException("An event needs /from and /to date or time details.");
+            if (fromText.isEmpty() || toText.isEmpty()) {
+                throw new AltairException("An event needs /from and /to dates.");
             }
             validateStorableText(description);
-            validateStorableText(from);
-            validateStorableText(to);
-            return new Event(description, from, to);
+            validateStorableText(fromText);
+            validateStorableText(toText);
+            return new Event(description, parseDate(fromText, "An event start date"),
+                    parseDate(toText, "An event end date"));
         }
 
         default:
@@ -201,6 +208,15 @@ public class Altair {
             return "";
         }
         return String.join(" ", java.util.Arrays.copyOfRange(words, startIndex, endIndex));
+    }
+
+    /** Parses a user-supplied ISO date and reports a helpful command error. */
+    private static LocalDate parseDate(String text, String dateDescription) throws AltairException {
+        try {
+            return LocalDate.parse(text, INPUT_DATE_FORMAT);
+        } catch (DateTimeParseException exception) {
+            throw new AltairException(dateDescription + " must use yyyy-MM-dd format.");
+        }
     }
 
     /** Rejects the file delimiter in user data so saved rows stay parseable. */
@@ -274,7 +290,7 @@ public class Altair {
             if (parts.length != 4 || parts[3].contains("|") || parts[3].trim().isEmpty()) {
                 throw new AltairException("I couldn't load your tasks.");
             }
-            task = new Deadline(description, parts[3].trim());
+            task = new Deadline(description, parseDate(parts[3].trim(), "A deadline date"));
             break;
 
         case "E":
@@ -282,16 +298,17 @@ public class Altair {
                 throw new AltairException("I couldn't load your tasks.");
             }
             String eventDetails = parts[3].trim();
-            int separatorIndex = eventDetails.lastIndexOf('-');
-            if (separatorIndex <= 0 || separatorIndex == eventDetails.length() - 1) {
+            String[] dates = eventDetails.split("\\s+-\\s+", 2);
+            if (dates.length != 2 || dates[0].trim().isEmpty() || dates[1].trim().isEmpty()) {
                 throw new AltairException("I couldn't load your tasks.");
             }
-            String from = eventDetails.substring(0, separatorIndex).trim();
-            String to = eventDetails.substring(separatorIndex + 1).trim();
-            if (from.isEmpty() || to.isEmpty()) {
+            try {
+                task = new Event(description,
+                        LocalDate.parse(dates[0].trim(), INPUT_DATE_FORMAT),
+                        LocalDate.parse(dates[1].trim(), INPUT_DATE_FORMAT));
+            } catch (DateTimeParseException exception) {
                 throw new AltairException("I couldn't load your tasks.");
             }
-            task = new Event(description, from, to);
             break;
 
         default:

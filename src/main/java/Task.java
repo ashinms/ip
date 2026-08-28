@@ -2,7 +2,7 @@
  * The base type for every task in the task list.
  *
  * <p>Subclasses inherit the shared description and completion state while
- * customizing the type marker and any date/time details they display.</p>
+ * customizing the type marker and any scheduling details they display.</p>
  */
 public class Task {
     /** The text entered by the user for this task. */
