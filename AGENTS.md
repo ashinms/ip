@@ -30,8 +30,18 @@ After every code update:
 
 1. Review `test/ui-test-plan.md` and update it when the change adds, removes, or changes observable command-line UI behavior. Keep each affected test case's aim, inputs, and expected output accurate.
 2. Invoke the project-local `test-ui` skill (`$test-ui`) using the updated plan. Do not skip this invocation when the plan does not need changes.
+3. Update the JUnit tests so the project still meets the test coverage target below (see `## Test coverage`). Add tests for new logic, revise tests whose expected behavior changed, and remove tests for deleted code.
+4. Run the full JUnit suite with `./gradlew test` and make sure it passes.
 
-Treat the code update as incomplete until the UI test session has been run. If a test fails, stop the session, report the actual and expected output, and resolve or explicitly report the failure before considering the update complete.
+Treat the code update as incomplete until the UI test session has been run and the JUnit suite passes. If a test fails, stop the session, report the actual and expected output, and resolve or explicitly report the failure before considering the update complete.
+
+## Test coverage:
+
+Target: JUnit tests should cover roughly the top 50% highest-value methods, prioritizing complex, core, or business-critical logic (for example command parsing and file persistence) over trivial getters, setters, and console-print helpers.
+
+This is an ongoing target, not a one-time task: every code change must be followed by a matching update to the JUnit tests (step 3 of the code update workflow) so coverage of the high-value methods does not slip below the target. A change is not complete until its tests exist and `./gradlew test` passes.
+
+Follow Gradle and JUnit conventions for test placement and naming: the test for `altair.storage.Storage` lives at `src/test/java/altair/storage/StorageTest.java`. When a descriptive test-method name would be long, use `featureUnderTest_testScenario_expectedBehavior()`, e.g. `load_unknownTypeMarker_throwsAltairException()`.
 
 ## Java version:
 
