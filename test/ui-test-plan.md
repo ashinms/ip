@@ -4,10 +4,10 @@ This plan tests the interactive console behavior of `Altair`.
 
 - Project root: repository root (`.`)
 - Runtime: Java 25
-- Launch command: `java -cp out/production/ip Altair`
+- Launch command: `java -cp out/production/ip altair.Altair`
 - Output comparison: exact, including spaces and line breaks
 - Test runner: `.codex/skills/test-ui/scripts/run_ui_tests.py`
-- Preparation: Compile from the project root with `javac -d out/production/ip src/main/java/*.java` before running the plan.
+- Preparation: Compile from the project root with `javac -d out/production/ip $(find src/main/java -name '*.java')` before running the plan. The sources now live in the `altair` package tree, so the class is launched as `altair.Altair`.
 - Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
 - Isolation: Test cases 1–9 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
 - Missing data: Starting without `./data/duke.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
@@ -22,7 +22,7 @@ Aim: Verify that the application displays its greeting and exits with the `bye` 
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -58,7 +58,7 @@ Aim: Verify that the `todo` command creates a ToDo task and that the list displa
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -111,7 +111,7 @@ Aim: Verify that marking and unmarking update the displayed completion status of
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -179,7 +179,7 @@ Aim: Verify that ToDos, Deadlines, and Events display their type and formatted d
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -258,7 +258,7 @@ Aim: Verify that `delete <task number>` removes a selected middle task, updates 
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -336,7 +336,7 @@ Aim: Verify that an incomplete ToDo command and an unrecognized command are hand
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -380,7 +380,7 @@ Aim: Verify that incomplete Deadline and Event commands display helpful explanat
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -436,7 +436,7 @@ Aim: Verify that malformed, non-numeric, and out-of-range task numbers are rejec
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -513,7 +513,7 @@ Aim: Verify that `list` handles an empty list before and after the only task is 
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -569,7 +569,7 @@ Aim: Verify that a happy-path task-list change sequence completes normally while
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -616,7 +616,7 @@ Aim: Verify that a task saved by the previous chatbot process is restored when t
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -663,7 +663,7 @@ Aim: Verify that commands remain usable with uppercase keywords, repeated spaces
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -721,7 +721,7 @@ Aim: Verify that the file delimiter is rejected in user task details instead of 
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:
@@ -765,7 +765,7 @@ Aim: Verify that `bye` and `list` reject unexpected arguments instead of silentl
 Command:
 
 ```text
-java -cp out/production/ip Altair
+java -cp out/production/ip altair.Altair
 ```
 
 Inputs:

@@ -1,3 +1,5 @@
+package altair.task;
+
 /**
  * The fixed categories of tasks supported by Altair.
  */
