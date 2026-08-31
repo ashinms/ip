@@ -27,16 +27,31 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link TaskType#DEADLINE}
+     */
     @Override
     protected TaskType getTaskType() {
         return TaskType.DEADLINE;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Appends the due date, so the saved line is {@code D | done | description | yyyy-MM-dd}.</p>
+     */
     @Override
     public String toFileString() {
         return super.toFileString() + " | " + by;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Adds the due date in {@code MMM dd yyyy} form, e.g. {@code (by: Oct 15 2025)}.</p>
+     */
     @Override
     public String toString() {
         return super.toString() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";

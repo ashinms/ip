@@ -28,6 +28,20 @@ public class Altair {
     /** The date format accepted in commands. */
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
+    /** This class only holds static members, so it is never instantiated. */
+    private Altair() {
+    }
+
+    /**
+     * Runs the task manager: loads the saved tasks, greets the user, then reads
+     * and handles one command per line until {@code bye} or end of input.
+     *
+     * <p>Any {@link AltairException} raised while handling a command is shown to
+     * the user and the loop continues; a failure to load the saved tasks at
+     * start-up is reported and ends the program.</p>
+     *
+     * @param args command-line arguments; not used
+     */
     public static void main(String[] args) {
         List<Task> tasks;
         try {
