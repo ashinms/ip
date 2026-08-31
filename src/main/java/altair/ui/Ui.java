@@ -95,6 +95,22 @@ public class Ui {
     }
 
     /**
+     * Prints the tasks that matched a {@code find} search, numbered from one.
+     *
+     * @param tasks the matching tasks, in list order
+     */
+    public void showFoundTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("     No matching tasks in your list.");
+            return;
+        }
+        System.out.println("     Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println("     " + (i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /**
      * Prints the confirmation shown after a new task is added.
      *
      * @param task the task that was added.

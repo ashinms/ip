@@ -9,7 +9,7 @@ This plan tests the interactive console behavior of `Altair`.
 - Test runner: `.codex/skills/test-ui/scripts/run_ui_tests.py`
 - Preparation: Compile from the project root with `javac -d out/production/ip $(find src/main/java -name '*.java')` before running the plan. The sources now live in the `altair` package tree, so the class is launched as `altair.Altair`.
 - Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
-- Isolation: Test cases 1–9 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
+- Isolation: Test cases 1–9 and 12–15 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
 - Missing data: Starting without `./data/duke.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
 - Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace.
 
@@ -794,6 +794,92 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
     Please use: list.
+____________________________________________________________
+____________________________________________________________
+    Goodbye. Let me know when you need me again.
+____________________________________________________________
+```
+
+## Test case 15: Find tasks by keyword
+
+Aim: Verify that `find` lists the tasks whose description contains the keyword (case-insensitive substring), reports when nothing matches, and rejects a missing keyword.
+
+### Step 1: Add tasks, search, clean up, and exit
+
+Command:
+
+```text
+java -cp out/production/ip altair.Altair
+```
+
+Inputs:
+
+```text
+todo read book
+todo borrow book
+todo buy milk
+find book
+find xyzzy
+find
+delete 1
+delete 1
+delete 1
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+   _____  .__   __         .__        
+  /  _  \ |  | _/  |______ |__|______ 
+ /  /_\  \|  | \   __\__  \|  \_  __ \
+/    |    \  |__|  |  / __ \|  ||  | \/
+\____|__  /____/|__| (____  /__||__|  
+        \/                \/          
+Greetings, I am Altair.
+How may I help you?
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] read book
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] borrow book
+    Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Copy. Your task has been added:
+      [T][ ] buy milk
+    Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the matching tasks in your list:
+     1.[T][ ] read book
+     2.[T][ ] borrow book
+____________________________________________________________
+____________________________________________________________
+     No matching tasks in your list.
+____________________________________________________________
+____________________________________________________________
+    Please use: find <keyword>.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] read book
+    Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] borrow book
+    Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+    Noted. I've removed this task:
+      [T][ ] buy milk
+    Now you have 0 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
     Goodbye. Let me know when you need me again.

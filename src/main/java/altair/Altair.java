@@ -3,6 +3,7 @@ package altair;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -71,6 +72,8 @@ public class Altair {
                 if (commandType == CommandType.LIST) {
                     ensureNoArguments(command, "list");
                     UI.showTaskList(tasks);
+                } else if (commandType == CommandType.FIND) {
+                    findTasks(command, tasks);
                 } else if (commandType == CommandType.MARK) {
                     markTask(command, tasks);
                 } else if (commandType == CommandType.UNMARK) {
@@ -225,6 +228,29 @@ public class Altair {
         if (text.contains("|")) {
             throw new AltairException("Task details cannot contain the '|' character.");
         }
+    }
+
+    /**
+     * Shows the tasks whose description contains the keyword from a
+     * {@code find <keyword>} command.
+     *
+     * @param command the command entered by the user
+     * @param tasks the current task collection
+     * @throws AltairException if the command has no search keyword
+     */
+    private static void findTasks(String command, List<Task> tasks) throws AltairException {
+        String keyword = textAfterCommand(command.trim(), "find");
+        if (keyword.isEmpty()) {
+            throw new AltairException("Please use: find <keyword>.");
+        }
+
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.descriptionContains(keyword)) {
+                matches.add(task);
+            }
+        }
+        UI.showFoundTasks(matches);
     }
 
     /**
