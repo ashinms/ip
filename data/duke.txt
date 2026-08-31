@@ -1,2 +1,5 @@
-T | 0 | swimming
-D | 0 | project | 2026-08-30
+T | 1 | swimming
+D | 1 | project | 2026-08-30
+T | 1 | swim
+T | 0 | run
+D | 0 | project | 2026-09-01
