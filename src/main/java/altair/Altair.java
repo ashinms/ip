@@ -1,8 +1,18 @@
+package altair;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
+
+import altair.command.CommandType;
+import altair.storage.Storage;
+import altair.task.Deadline;
+import altair.task.Event;
+import altair.task.Task;
+import altair.task.Todo;
+import altair.ui.Ui;
 
 /**
  * A simple command-line task manager.

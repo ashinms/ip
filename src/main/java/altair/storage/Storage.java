@@ -1,3 +1,5 @@
+package altair.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -11,10 +13,16 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import altair.AltairException;
+import altair.task.Deadline;
+import altair.task.Event;
+import altair.task.Task;
+import altair.task.Todo;
+
 /**
  * Loads the task list from a text file and saves it back to the same file.
  *
- * <p>Keeping all file handling in one class lets {@link Altair} concentrate on
+ * <p>Keeping all file handling in one class lets {@link altair.Altair} concentrate on
  * the conversation with the user: the main loop asks this class to read the
  * saved tasks once at start-up and to persist the whole list after every
  * change.</p>

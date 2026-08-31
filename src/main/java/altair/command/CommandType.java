@@ -1,3 +1,5 @@
+package altair.command;
+
 import java.util.Locale;
 
 /**

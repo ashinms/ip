@@ -1,3 +1,5 @@
+package altair.task;
+
 /**
  * The base type for every task in the task list.
  *

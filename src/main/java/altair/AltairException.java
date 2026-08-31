@@ -1,3 +1,5 @@
+package altair;
+
 /**
  * Represents an input error that Altair can explain to the user.
  */

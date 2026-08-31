@@ -1,5 +1,9 @@
+package altair.ui;
+
 import java.util.List;
 import java.util.Scanner;
+
+import altair.task.Task;
 
 /**
  * Handles every interaction with the user on the command line: reading
