@@ -3,6 +3,7 @@ package altair;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,7 +41,7 @@ public class Altair {
      * the user and the loop continues; a failure to load the saved tasks at
      * start-up is reported and ends the program.</p>
      *
-     * @param args command-line arguments; not used
+     * @param args command-line arguments; not used.
      */
     public static void main(String[] args) {
         List<Task> tasks;
@@ -101,9 +102,9 @@ public class Altair {
      * <p>Typed commands use markers so descriptions and date strings may
      * contain spaces.</p>
      *
-     * @param command the complete command entered by the user
-     * @return the new task
-     * @throws AltairException if the command is incomplete or unknown
+     * @param command the complete command entered by the user.
+     * @return the new task.
+     * @throws AltairException if the command is incomplete or unknown.
      */
     private static Task createTask(String command) throws AltairException {
         String trimmed = command == null ? "" : command.trim();
@@ -178,9 +179,9 @@ public class Altair {
     /**
      * Returns the part of a command after its command word.
      *
-     * @param command the trimmed command
-     * @param commandWord the command word to remove
-     * @return the remaining text
+     * @param command the trimmed command.
+     * @param commandWord the command word to remove.
+     * @return the remaining text.
      */
     private static String textAfterCommand(String command, String commandWord) {
         return command.substring(commandWord.length()).trim();
@@ -207,7 +208,7 @@ public class Altair {
         if (startIndex >= endIndex) {
             return "";
         }
-        return String.join(" ", java.util.Arrays.copyOfRange(words, startIndex, endIndex));
+        return String.join(" ", Arrays.copyOfRange(words, startIndex, endIndex));
     }
 
     /** Parses a user-supplied ISO date and reports a helpful command error. */
@@ -230,9 +231,9 @@ public class Altair {
      * Marks the task selected by a {@code mark <number>} command as done.
      * Invalid mark commands are reported and do not become new tasks.
      *
-     * @param command the command entered by the user
-     * @param tasks the current task collection
-     * @throws AltairException if the command does not contain a valid task number
+     * @param command the command entered by the user.
+     * @param tasks the current task collection.
+     * @throws AltairException if the command does not contain a valid task number.
      */
     private static void markTask(String command, List<Task> tasks)
             throws AltairException {
@@ -259,9 +260,9 @@ public class Altair {
      * Marks the task selected by an {@code unmark <number>} command as not done.
      * Invalid unmark commands are reported and do not become new tasks.
      *
-     * @param command the command entered by the user
-     * @param tasks the current task collection
-     * @throws AltairException if the command does not contain a valid task number
+     * @param command the command entered by the user.
+     * @param tasks the current task collection.
+     * @throws AltairException if the command does not contain a valid task number.
      */
     private static void unmarkTask(String command, List<Task> tasks)
             throws AltairException {
@@ -288,9 +289,9 @@ public class Altair {
      * Deletes the task selected by a {@code delete <number>} command.
      * Invalid delete commands are reported and leave the task collection unchanged.
      *
-     * @param command the command entered by the user
-     * @param tasks the current task collection
-     * @throws AltairException if the command does not contain a valid task number
+     * @param command the command entered by the user.
+     * @param tasks the current task collection.
+     * @throws AltairException if the command does not contain a valid task number.
      */
     private static void deleteTask(String command, List<Task> tasks)
             throws AltairException {

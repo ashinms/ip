@@ -8,7 +8,7 @@ public class AltairException extends Exception {
     /**
      * Creates an exception with a user-facing explanation.
      *
-     * @param message the explanation to show to the user
+     * @param message the explanation to show to the user.
      */
     public AltairException(String message) {
         super(message);

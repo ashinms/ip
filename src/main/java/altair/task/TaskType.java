@@ -22,7 +22,7 @@ public enum TaskType {
     /**
      * Returns the one-letter marker used when displaying this task type.
      *
-     * @return the task type marker
+     * @return the task type marker.
      */
     public String getIcon() {
         return icon;

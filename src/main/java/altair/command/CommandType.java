@@ -42,8 +42,8 @@ public enum CommandType {
     /**
      * Identifies the command at the start of an input line.
      *
-     * @param command the complete input line
-     * @return the matching command type, or {@link #UNKNOWN}
+     * @param command the complete input line.
+     * @return the matching command type, or {@link #UNKNOWN}.
      */
     public static CommandType from(String command) {
         String trimmed = command == null ? "" : command.trim().toLowerCase(Locale.ROOT);
