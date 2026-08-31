@@ -22,9 +22,9 @@ public class Event extends Task {
     /**
      * Creates an unfinished event.
      *
-     * @param description the event description
-     * @param from the date on which the event starts
-     * @param to the date on which the event ends
+     * @param description the event description.
+     * @param from the date on which the event starts.
+     * @param to the date on which the event ends.
      */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);

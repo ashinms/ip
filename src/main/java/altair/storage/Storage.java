@@ -38,7 +38,7 @@ public class Storage {
     /**
      * Creates a storage backed by the given file path.
      *
-     * @param filePath the location of the saved task list, e.g. {@code ./data/duke.txt}
+     * @param filePath the location of the saved task list, e.g. {@code ./data/duke.txt}.
      */
     public Storage(String filePath) {
         this.file = Path.of(filePath);
@@ -47,8 +47,8 @@ public class Storage {
     /**
      * Reads the saved task list, if the file exists.
      *
-     * @return the tasks restored from disk, or an empty list for a new project
-     * @throws AltairException if the file cannot be read or a line is malformed
+     * @return the tasks restored from disk, or an empty list for a new project.
+     * @throws AltairException if the file cannot be read or a line is malformed.
      */
     public List<Task> load() throws AltairException {
         List<Task> tasks = new ArrayList<>();
@@ -81,8 +81,8 @@ public class Storage {
      * <p>The parent directory is created on the first save so a fresh project
      * can be run without any manual setup.</p>
      *
-     * @param tasks the current task list
-     * @throws AltairException if the task list cannot be written
+     * @param tasks the current task list.
+     * @throws AltairException if the task list cannot be written.
      */
     public void save(List<Task> tasks) throws AltairException {
         Path temporaryFile = file.resolveSibling(file.getFileName() + ".tmp");
@@ -114,9 +114,9 @@ public class Storage {
     /**
      * Reconstructs a task from one line in the saved task-list format.
      *
-     * @param line one serialized task
-     * @return the reconstructed task
-     * @throws AltairException if the line does not use the supported format
+     * @param line one serialized task.
+     * @return the reconstructed task.
+     * @throws AltairException if the line does not use the supported format.
      */
     private static Task taskFromFileLine(String line) throws AltairException {
         String[] parts = line.split("\\s*\\|\\s*", 4);

@@ -39,7 +39,7 @@ public class Ui {
     /**
      * Reports whether another command line is available to read.
      *
-     * @return {@code true} if {@link #readCommand()} can return another line
+     * @return {@code true} if {@link #readCommand()} can return another line.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -48,7 +48,7 @@ public class Ui {
     /**
      * Reads the next command line entered by the user.
      *
-     * @return the raw text of the next line
+     * @return the raw text of the next line.
      */
     public String readCommand() {
         return scanner.nextLine();
@@ -71,7 +71,7 @@ public class Ui {
     /**
      * Prints an error explanation, indented to line up with other responses.
      *
-     * @param message the explanation to show
+     * @param message the explanation to show.
      */
     public void showError(String message) {
         System.out.println("    " + message);
@@ -85,7 +85,7 @@ public class Ui {
     /**
      * Prints the whole task list, numbered from one.
      *
-     * @param tasks the tasks to display, in list order
+     * @param tasks the tasks to display, in list order.
      */
     public void showTaskList(List<Task> tasks) {
         System.out.println("     The following are your tasks");
@@ -97,8 +97,8 @@ public class Ui {
     /**
      * Prints the confirmation shown after a new task is added.
      *
-     * @param task the task that was added
-     * @param taskCount the number of tasks now in the list
+     * @param task the task that was added.
+     * @param taskCount the number of tasks now in the list.
      */
     public void showAdded(Task task, int taskCount) {
         System.out.println("    Copy. Your task has been added:");
@@ -109,7 +109,7 @@ public class Ui {
     /**
      * Prints the confirmation shown after a task is marked as done.
      *
-     * @param task the task that was marked
+     * @param task the task that was marked.
      */
     public void showMarked(Task task) {
         System.out.println("     Task marked as completed:");
@@ -119,7 +119,7 @@ public class Ui {
     /**
      * Prints the confirmation shown after a task is marked as not done.
      *
-     * @param task the task that was unmarked
+     * @param task the task that was unmarked.
      */
     public void showUnmarked(Task task) {
         System.out.println("     OK, I've marked this task as not done yet:");
@@ -129,8 +129,8 @@ public class Ui {
     /**
      * Prints the confirmation shown after a task is deleted.
      *
-     * @param task the task that was removed
-     * @param taskCount the number of tasks left in the list
+     * @param task the task that was removed.
+     * @param taskCount the number of tasks left in the list.
      */
     public void showDeleted(Task task, int taskCount) {
         System.out.println("    Noted. I've removed this task:");

@@ -16,7 +16,7 @@ public class Task {
     /**
      * Creates an unfinished task.
      *
-     * @param description the text describing the task
+     * @param description the text describing the task.
      */
     public Task(String description) {
         this.description = description;
@@ -26,7 +26,7 @@ public class Task {
     /**
      * Returns the task description.
      *
-     * @return the task description
+     * @return the task description.
      */
     public String getDescription() {
         return description;
@@ -35,7 +35,7 @@ public class Task {
     /**
      * Returns the status symbol used when displaying this task.
      *
-     * @return {@code X} for a done task, otherwise a blank symbol
+     * @return {@code X} for a done task, otherwise a blank symbol.
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
@@ -54,7 +54,7 @@ public class Task {
     /**
      * Returns the category of this task.
      *
-     * @return the task category
+     * @return the task category.
      */
     protected TaskType getTaskType() {
         return TaskType.TODO;
@@ -63,7 +63,7 @@ public class Task {
     /**
      * Returns the one-letter marker used for this task type.
      *
-     * @return the task type marker
+     * @return the task type marker.
      */
     protected String getTypeIcon() {
         return getTaskType().getIcon();
@@ -72,7 +72,7 @@ public class Task {
     /**
      * Formats this task for the on-disk task list.
      *
-     * @return the task type, completion state, and description separated by pipes
+     * @return the task type, completion state, and description separated by pipes.
      */
     public String toFileString() {
         return getTypeIcon() + " | " + (isDone ? "1" : "0") + " | " + description;
@@ -81,7 +81,7 @@ public class Task {
     /**
      * Formats the task for the list and completion messages.
      *
-     * @return the task type, completion state, and description
+     * @return the task type, completion state, and description.
      */
     @Override
     public String toString() {
