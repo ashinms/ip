@@ -32,16 +32,33 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link TaskType#EVENT}
+     */
     @Override
     protected TaskType getTaskType() {
         return TaskType.EVENT;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Appends the start and end dates as {@code from - to}, so the saved line is
+     * {@code E | done | description | yyyy-MM-dd - yyyy-MM-dd}.</p>
+     */
     @Override
     public String toFileString() {
         return super.toFileString() + " | " + from + " - " + to;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Adds the date range in {@code MMM dd yyyy} form, e.g.
+     * {@code (from: Oct 15 2025 to: Oct 16 2025)}.</p>
+     */
     @Override
     public String toString() {
         return super.toString() + " (from: " + from.format(DISPLAY_DATE_FORMAT)
