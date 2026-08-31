@@ -1,14 +1,6 @@
-import java.io.IOException;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -18,10 +10,10 @@ import java.util.Scanner;
  */
 public class Altair {
 
-    /** The file where the current task list is stored between changes. */
-    private static final Path TASKS_FILE = Path.of("./data/duke.txt");
+    /** Handles reading the saved task list at start-up and writing it after changes. */
+    private static final Storage STORAGE = new Storage("./data/duke.txt");
 
-    /** The date format accepted in commands and used in saved task details. */
+    /** The date format accepted in commands. */
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public static void main(String[] args) {
@@ -35,7 +27,7 @@ public class Altair {
 
         List<Task> tasks;
         try {
-            tasks = loadTasks();
+            tasks = STORAGE.load();
         } catch (AltairException exception) {
             System.out.println("    " + exception.getMessage());
             return;
@@ -81,7 +73,7 @@ public class Altair {
                     Task newTask = createTask(command);
                     tasks.add(newTask);
                     try {
-                        saveTasks(tasks);
+                        STORAGE.save(tasks);
                     } catch (AltairException exception) {
                         tasks.remove(tasks.size() - 1);
                         throw exception;
@@ -226,137 +218,6 @@ public class Altair {
         }
     }
 
-    /**
-     * Reads the saved task list, if one exists.
-     *
-     * @return the tasks restored from disk, or an empty list for a new project
-     * @throws AltairException if the saved file cannot be read or parsed
-     */
-    private static List<Task> loadTasks() throws AltairException {
-        List<Task> tasks = new ArrayList<>();
-        List<String> fileLines;
-        try {
-            if (!Files.exists(TASKS_FILE)) {
-                return tasks;
-            }
-            fileLines = Files.readAllLines(TASKS_FILE, StandardCharsets.UTF_8);
-        } catch (IOException | SecurityException exception) {
-            throw new AltairException("I couldn't load your tasks.");
-        }
-
-        for (int i = 0; i < fileLines.size(); i++) {
-            String line = fileLines.get(i);
-            if (!line.trim().isEmpty()) {
-                try {
-                    tasks.add(taskFromFileLine(line));
-                } catch (AltairException exception) {
-                    throw new AltairException("I couldn't load your tasks on line " + (i + 1) + ".");
-                }
-            }
-        }
-        return tasks;
-    }
-
-    /**
-     * Reconstructs a task from one line in the saved task-list format.
-     *
-     * @param line one serialized task
-     * @return the reconstructed task
-     * @throws AltairException if the line does not use the supported format
-     */
-    private static Task taskFromFileLine(String line) throws AltairException {
-        String[] parts = line.split("\\s*\\|\\s*", 4);
-        if (parts.length < 3) {
-            throw new AltairException("I couldn't load your tasks.");
-        }
-
-        String type = parts[0].trim();
-        String status = parts[1].trim();
-        String description = parts[2].trim();
-        if (description.isEmpty() || (!status.equals("0") && !status.equals("1"))) {
-            throw new AltairException("I couldn't load your tasks.");
-        }
-
-        Task task;
-        switch (type) {
-        case "T":
-            if (parts.length != 3) {
-                throw new AltairException("I couldn't load your tasks.");
-            }
-            task = new Todo(description);
-            break;
-
-        case "D":
-            if (parts.length != 4 || parts[3].contains("|") || parts[3].trim().isEmpty()) {
-                throw new AltairException("I couldn't load your tasks.");
-            }
-            task = new Deadline(description, parseDate(parts[3].trim(), "A deadline date"));
-            break;
-
-        case "E":
-            if (parts.length != 4 || parts[3].contains("|")) {
-                throw new AltairException("I couldn't load your tasks.");
-            }
-            String eventDetails = parts[3].trim();
-            String[] dates = eventDetails.split("\\s+-\\s+", 2);
-            if (dates.length != 2 || dates[0].trim().isEmpty() || dates[1].trim().isEmpty()) {
-                throw new AltairException("I couldn't load your tasks.");
-            }
-            try {
-                task = new Event(description,
-                        LocalDate.parse(dates[0].trim(), INPUT_DATE_FORMAT),
-                        LocalDate.parse(dates[1].trim(), INPUT_DATE_FORMAT));
-            } catch (DateTimeParseException exception) {
-                throw new AltairException("I couldn't load your tasks.");
-            }
-            break;
-
-        default:
-            throw new AltairException("I couldn't load your tasks.");
-        }
-
-        if (status.equals("1")) {
-            task.markAsDone();
-        }
-        return task;
-    }
-
-    /**
-     * Writes the current task list to disk, replacing the previous snapshot.
-     *
-     * <p>The parent directory is created on the first save so a fresh project
-     * can be run without any manual setup.</p>
-     *
-     * @param tasks the current task list
-     * @throws AltairException if the task list cannot be written
-     */
-    private static void saveTasks(List<Task> tasks) throws AltairException {
-        Path temporaryFile = TASKS_FILE.resolveSibling(TASKS_FILE.getFileName() + ".tmp");
-        try {
-            Files.createDirectories(TASKS_FILE.getParent());
-            List<String> fileLines = tasks.stream()
-                    .map(Task::toFileString)
-                    .toList();
-            Files.write(temporaryFile, fileLines, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE);
-            try {
-                Files.move(temporaryFile, TASKS_FILE, StandardCopyOption.ATOMIC_MOVE,
-                        StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException exception) {
-                Files.move(temporaryFile, TASKS_FILE, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException | SecurityException exception) {
-            throw new AltairException("I couldn't save your tasks.");
-        } finally {
-            try {
-                Files.deleteIfExists(temporaryFile);
-            } catch (IOException | SecurityException ignored) {
-                // The saved snapshot is still usable if cleanup cannot remove the temporary file.
-            }
-        }
-    }
-
     /** Prints the common confirmation shown after adding any task type. */
     private static void printAddedTask(Task task, int taskCount, String separator) {
         System.out.println("    Copy. Your task has been added:");
@@ -385,7 +246,7 @@ public class Altair {
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsDone();
         try {
-            saveTasks(tasks);
+            STORAGE.save(tasks);
         } catch (AltairException exception) {
             if (!wasDone) {
                 task.markAsNotDone();
@@ -417,7 +278,7 @@ public class Altair {
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsNotDone();
         try {
-            saveTasks(tasks);
+            STORAGE.save(tasks);
         } catch (AltairException exception) {
             if (wasDone) {
                 task.markAsDone();
@@ -447,7 +308,7 @@ public class Altair {
 
         Task removedTask = tasks.remove(taskNumber - 1);
         try {
-            saveTasks(tasks);
+            STORAGE.save(tasks);
         } catch (AltairException exception) {
             tasks.add(taskNumber - 1, removedTask);
             throw exception;
