@@ -56,6 +56,13 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 
 ## Git
 
-Use lightweight tags unless the user requests an annotated tag.
-When proposing or creating a commit message, include enough detail to explain the rationale for the change.
-Do not commit or push unless explicitly asked.
+All commits and branch names must follow the project's Git standard, which is based on se-education.org's Git conventions (https://se-education.org/guides/conventions/git.html). It is captured as the project-local `seedu-git-standard` skill; invoke it (`$seedu-git-standard`) whenever you write a commit message or name a branch. This is mandatory for all future commits.
+
+Key points: imperative-mood subject, capitalized, no trailing period, <= 50 chars (hard limit 72); body (when needed) separated by a blank line and wrapped at 72 chars, explaining what and why; branch names in kebab-case.
+
+Additional project rules:
+
+- Draft the commit message and get the user's explicit approval before committing. Keep messages very short; add a body only when the subject cannot carry the rationale.
+- Do not add a `Co-Authored-By` trailer; the user is the sole author.
+- Use lightweight tags unless the user requests an annotated tag.
+- Do not commit or push unless explicitly asked.
