@@ -1,6 +1,8 @@
 package altair.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,27 @@ public class TaskTest {
         Task task = new Task("read book");
         task.markAsDone();
         assertEquals("X", task.getStatusIcon());
+    }
+
+    // ----- descriptionContains -----
+
+    @Test
+    public void descriptionContains_keywordIsASubstring_returnsTrue() {
+        Task task = new Task("read book");
+        assertTrue(task.descriptionContains("book"));
+    }
+
+    @Test
+    public void descriptionContains_keywordDiffersInCase_returnsTrue() {
+        // The search ignores case, so "BOOK" still matches "read book".
+        Task task = new Task("read book");
+        assertTrue(task.descriptionContains("BOOK"));
+    }
+
+    @Test
+    public void descriptionContains_keywordAbsent_returnsFalse() {
+        Task task = new Task("read book");
+        assertFalse(task.descriptionContains("milk"));
     }
 
     // ----- markAsDone / markAsNotDone -----

@@ -33,6 +33,11 @@ public class CommandTypeTest {
     }
 
     @Test
+    public void from_exactFindKeyword_returnsFind() {
+        assertEquals(CommandType.FIND, CommandType.from("find"));
+    }
+
+    @Test
     public void from_exactMarkKeyword_returnsMark() {
         assertEquals(CommandType.MARK, CommandType.from("mark"));
     }
@@ -67,6 +72,11 @@ public class CommandTypeTest {
     @Test
     public void from_markKeywordWithTaskNumber_returnsMark() {
         assertEquals(CommandType.MARK, CommandType.from("mark 2"));
+    }
+
+    @Test
+    public void from_findKeywordWithKeyword_returnsFind() {
+        assertEquals(CommandType.FIND, CommandType.from("find book"));
     }
 
     @Test
@@ -120,6 +130,11 @@ public class CommandTypeTest {
     @Test
     public void from_keywordAsPrefixOfLongerWord_returnsUnknown() {
         assertEquals(CommandType.UNKNOWN, CommandType.from("listing"));
+    }
+
+    @Test
+    public void from_findAsPrefixOfLongerWord_returnsUnknown() {
+        assertEquals(CommandType.UNKNOWN, CommandType.from("finding nemo"));
     }
 
     @Test

@@ -1,5 +1,7 @@
 package altair.task;
 
+import java.util.Locale;
+
 /**
  * The base type for every task in the task list.
  *
@@ -39,6 +41,18 @@ public class Task {
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
+    }
+
+    /**
+     * Returns whether this task's description contains the given text,
+     * ignoring case.
+     *
+     * @param keyword the text to search for
+     * @return {@code true} if the description contains {@code keyword}
+     */
+    public boolean descriptionContains(String keyword) {
+        return description.toLowerCase(Locale.ROOT)
+                .contains(keyword.toLowerCase(Locale.ROOT));
     }
 
     /** Marks this task as done. */
