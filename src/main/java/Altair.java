@@ -3,7 +3,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 
 /**
  * A simple command-line task manager.
@@ -13,62 +12,46 @@ public class Altair {
     /** Handles reading the saved task list at start-up and writing it after changes. */
     private static final Storage STORAGE = new Storage("./data/duke.txt");
 
+    /** Handles all reading from and printing to the console. */
+    private static final Ui UI = new Ui();
+
     /** The date format accepted in commands. */
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public static void main(String[] args) {
-        String separator = "____________________________________________________________";
-        String banner = "   _____  .__   __         .__        \n"
-                + "  /  _  \\ |  | _/  |______ |__|______ \n"
-                + " /  /_\\  \\|  | \\   __\\__  \\|  \\_  __ \\\n"
-                + "/    |    \\  |__|  |  / __ \\|  ||  | \\/\n"
-                + "\\____|__  /____/|__| (____  /__||__|  \n"
-                + "        \\/                \\/          ";
-
         List<Task> tasks;
         try {
             tasks = STORAGE.load();
         } catch (AltairException exception) {
-            System.out.println("    " + exception.getMessage());
+            UI.showError(exception.getMessage());
             return;
         }
 
-        System.out.println(separator);
-        System.out.println(banner);
-        System.out.println("Greetings, I am Altair.");
-        System.out.println("How may I help you?");
-        System.out.println(separator);
+        UI.showWelcome();
 
-        Scanner scanner = new Scanner(System.in);
+        while (UI.hasNextCommand()) {
+            String command = UI.readCommand();
 
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
-
-            System.out.println(separator);
+            UI.showLine();
 
             try {
                 CommandType commandType = CommandType.from(command);
 
                 if (commandType == CommandType.BYE) {
                     ensureNoArguments(command, "bye");
-                    System.out.println("    Goodbye. Let me know when you need me again.");
-                    System.out.println(separator);
+                    UI.showGoodbye();
                     break;
                 }
 
                 if (commandType == CommandType.LIST) {
                     ensureNoArguments(command, "list");
-                    System.out.println("     The following are your tasks");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println("     " + (i + 1) + "." + tasks.get(i));
-                    }
-                    System.out.println(separator);
+                    UI.showTaskList(tasks);
                 } else if (commandType == CommandType.MARK) {
-                    markTask(command, tasks, separator);
+                    markTask(command, tasks);
                 } else if (commandType == CommandType.UNMARK) {
-                    unmarkTask(command, tasks, separator);
+                    unmarkTask(command, tasks);
                 } else if (commandType == CommandType.DELETE) {
-                    deleteTask(command, tasks, separator);
+                    deleteTask(command, tasks);
                 } else {
                     Task newTask = createTask(command);
                     tasks.add(newTask);
@@ -78,11 +61,12 @@ public class Altair {
                         tasks.remove(tasks.size() - 1);
                         throw exception;
                     }
-                    printAddedTask(newTask, tasks.size(), separator);
+                    UI.showAdded(newTask, tasks.size());
                 }
             } catch (AltairException exception) {
-                System.out.println("    " + exception.getMessage());
-                System.out.println(separator);
+                UI.showError(exception.getMessage());
+            } finally {
+                UI.showLine();
             }
         }
     }
@@ -218,24 +202,15 @@ public class Altair {
         }
     }
 
-    /** Prints the common confirmation shown after adding any task type. */
-    private static void printAddedTask(Task task, int taskCount, String separator) {
-        System.out.println("    Copy. Your task has been added:");
-        System.out.println("      " + task);
-        System.out.println("    Now you have " + taskCount + " tasks in the list.");
-        System.out.println(separator);
-    }
-
     /**
      * Marks the task selected by a {@code mark <number>} command as done.
      * Invalid mark commands are reported and do not become new tasks.
      *
      * @param command the command entered by the user
      * @param tasks the current task collection
-     * @param separator the line used to separate responses
      * @throws AltairException if the command does not contain a valid task number
      */
-    private static void markTask(String command, List<Task> tasks, String separator)
+    private static void markTask(String command, List<Task> tasks)
             throws AltairException {
         int taskNumber = parseTaskNumber(command, "mark");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
@@ -253,9 +228,7 @@ public class Altair {
             }
             throw exception;
         }
-        System.out.println("     Task marked as completed:");
-        System.out.println("       " + task);
-        System.out.println(separator);
+        UI.showMarked(task);
     }
 
     /**
@@ -264,10 +237,9 @@ public class Altair {
      *
      * @param command the command entered by the user
      * @param tasks the current task collection
-     * @param separator the line used to separate responses
      * @throws AltairException if the command does not contain a valid task number
      */
-    private static void unmarkTask(String command, List<Task> tasks, String separator)
+    private static void unmarkTask(String command, List<Task> tasks)
             throws AltairException {
         int taskNumber = parseTaskNumber(command, "unmark");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
@@ -285,9 +257,7 @@ public class Altair {
             }
             throw exception;
         }
-        System.out.println("     OK, I've marked this task as not done yet:");
-        System.out.println("       " + task);
-        System.out.println(separator);
+        UI.showUnmarked(task);
     }
 
     /**
@@ -296,10 +266,9 @@ public class Altair {
      *
      * @param command the command entered by the user
      * @param tasks the current task collection
-     * @param separator the line used to separate responses
      * @throws AltairException if the command does not contain a valid task number
      */
-    private static void deleteTask(String command, List<Task> tasks, String separator)
+    private static void deleteTask(String command, List<Task> tasks)
             throws AltairException {
         int taskNumber = parseTaskNumber(command, "delete");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
@@ -313,10 +282,7 @@ public class Altair {
             tasks.add(taskNumber - 1, removedTask);
             throw exception;
         }
-        System.out.println("    Noted. I've removed this task:");
-        System.out.println("      " + removedTask);
-        System.out.println("    Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(separator);
+        UI.showDeleted(removedTask, tasks.size());
     }
 
     /** Parses the single positive integer used by mark, unmark, and delete. */
