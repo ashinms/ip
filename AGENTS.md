@@ -24,14 +24,21 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Coding standard:
+
+All Java code in this repository (every `.java` file under `src/`, production and test) must follow the project's coding standard, which is based on se-education.org's intermediate Java coding conventions (https://se-education.org/guides/conventions/java/intermediate.html).
+
+The standard is captured as the project-local `seedu-java-coding-standard` skill. Invoke it (`$seedu-java-coding-standard`) and apply its rules whenever you write, review, or refactor Java code. This is mandatory, not advisory: new or edited code must conform, and any file you touch must be left at least as compliant as you found it.
+
 ## Code update workflow:
 
 After every code update:
 
-1. Review `test/ui-test-plan.md` and update it when the change adds, removes, or changes observable command-line UI behavior. Keep each affected test case's aim, inputs, and expected output accurate.
-2. Invoke the project-local `test-ui` skill (`$test-ui`) using the updated plan. Do not skip this invocation when the plan does not need changes.
-3. Update the JUnit tests so the project still meets the test coverage target below (see `## Test coverage`). Add tests for new logic, revise tests whose expected behavior changed, and remove tests for deleted code.
-4. Run the full JUnit suite with `./gradlew test` and make sure it passes.
+1. Check the changed Java against the `## Coding standard` above (use `$seedu-java-coding-standard`) and fix any violations before moving on.
+2. Review `test/ui-test-plan.md` and update it when the change adds, removes, or changes observable command-line UI behavior. Keep each affected test case's aim, inputs, and expected output accurate.
+3. Invoke the project-local `test-ui` skill (`$test-ui`) using the updated plan. Do not skip this invocation when the plan does not need changes.
+4. Update the JUnit tests so the project still meets the test coverage target below (see `## Test coverage`). Add tests for new logic, revise tests whose expected behavior changed, and remove tests for deleted code.
+5. Run the full JUnit suite with `./gradlew test` and make sure it passes.
 
 Treat the code update as incomplete until the UI test session has been run and the JUnit suite passes. If a test fails, stop the session, report the actual and expected output, and resolve or explicitly report the failure before considering the update complete.
 
