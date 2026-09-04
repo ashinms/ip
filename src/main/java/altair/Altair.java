@@ -17,86 +17,182 @@ import altair.task.Todo;
 import altair.ui.Ui;
 
 /**
- * A simple command-line task manager.
+ * A simple task manager that can be driven from the command line or from a
+ * JavaFX GUI.
+ *
+ * <p>The command handling lives in {@link #getResponse(String)}, which takes one
+ * line of user input and returns the text to show back. {@link #main(String[])}
+ * drives the text UI by feeding typed lines through that method; the GUI classes
+ * in {@code altair.gui} call the same method.</p>
  */
 public class Altair {
 
-    /** Handles reading the saved task list at start-up and writing it after changes. */
-    private static final Storage STORAGE = new Storage("./data/duke.txt");
-
-    /** Handles all reading from and printing to the console. */
-    private static final Ui UI = new Ui();
+    /** The save file used when the application is started normally. */
+    private static final String DEFAULT_STORAGE_PATH = "./data/duke.txt";
 
     /** The date format accepted in commands. */
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    /** This class only holds static members, so it is never instantiated. */
-    private Altair() {
+    /** Reads the saved task list at start-up and writes it back after changes. */
+    private final Storage storage;
+
+    /** The tasks currently held in memory. */
+    private final List<Task> tasks;
+
+    /** The message from a failed start-up load, or {@code null} if the load succeeded. */
+    private final String loadError;
+
+    /** Set once the user issues a valid {@code bye} command. */
+    private boolean isExit;
+
+    /**
+     * Creates a task manager backed by the given save file, loading any tasks
+     * already stored there.
+     *
+     * <p>A load failure is not thrown from the constructor: it is remembered in
+     * {@link #getLoadError()} so the caller (text UI or GUI) can decide how to
+     * report it, and the task list starts empty.</p>
+     *
+     * @param filePath the location of the save file, e.g. {@code ./data/duke.txt}.
+     */
+    public Altair(String filePath) {
+        this.storage = new Storage(filePath);
+        List<Task> loaded;
+        String error;
+        try {
+            loaded = storage.load();
+            error = null;
+        } catch (AltairException exception) {
+            loaded = new ArrayList<>();
+            error = exception.getMessage();
+        }
+        this.tasks = loaded;
+        this.loadError = error;
     }
 
     /**
-     * Runs the task manager: loads the saved tasks, greets the user, then reads
-     * and handles one command per line until {@code bye} or end of input.
+     * Returns the explanation of a failed start-up load.
      *
-     * <p>Any {@link AltairException} raised while handling a command is shown to
-     * the user and the loop continues; a failure to load the saved tasks at
-     * start-up is reported and ends the program.</p>
+     * @return the error message, or {@code null} if the saved tasks loaded cleanly.
+     */
+    public String getLoadError() {
+        return loadError;
+    }
+
+    /**
+     * Reports whether the user has asked to exit with the {@code bye} command.
+     *
+     * @return {@code true} once a valid {@code bye} command has been handled.
+     */
+    public boolean isExit() {
+        return isExit;
+    }
+
+    /**
+     * Returns the greeting shown when the GUI starts.
+     *
+     * <p>Unlike the text UI greeting this has no divider lines or ASCII banner,
+     * which do not suit a chat bubble. A start-up load failure is included so
+     * the user still sees it.</p>
+     *
+     * @return the greeting text.
+     */
+    public String getGreeting() {
+        String greeting = "Greetings, I am Altair.\nHow may I help you?";
+        if (loadError != null) {
+            return loadError + "\n" + greeting;
+        }
+        return greeting;
+    }
+
+    /**
+     * Handles one line of user input and returns the text to show back.
+     *
+     * <p>An {@link AltairException} raised while handling the command is turned
+     * into an error message rather than propagated, so the caller's loop can
+     * continue.</p>
+     *
+     * @param command the complete line entered by the user.
+     * @return the response text, without a trailing newline.
+     */
+    public String getResponse(String command) {
+        try {
+            CommandType commandType = CommandType.from(command);
+
+            if (commandType == CommandType.BYE) {
+                ensureNoArguments(command, "bye");
+                isExit = true;
+                return Ui.formatGoodbye();
+            }
+
+            switch (commandType) {
+            case LIST:
+                ensureNoArguments(command, "list");
+                return Ui.formatTaskList(tasks);
+            case FIND:
+                return findTasks(command);
+            case MARK:
+                return markTask(command);
+            case UNMARK:
+                return unmarkTask(command);
+            case DELETE:
+                return deleteTask(command);
+            default:
+                return addTask(command);
+            }
+        } catch (AltairException exception) {
+            return Ui.formatError(exception.getMessage());
+        }
+    }
+
+    /**
+     * Runs the text UI: loads the saved tasks, greets the user, then reads and
+     * handles one command per line until {@code bye} or end of input.
      *
      * @param args command-line arguments; not used.
      */
     public static void main(String[] args) {
-        List<Task> tasks;
-        try {
-            tasks = STORAGE.load();
-        } catch (AltairException exception) {
-            UI.showError(exception.getMessage());
+        Altair altair = new Altair(DEFAULT_STORAGE_PATH);
+        Ui ui = new Ui();
+
+        if (altair.getLoadError() != null) {
+            ui.showError(altair.getLoadError());
             return;
         }
 
-        UI.showWelcome();
+        ui.showWelcome();
 
-        while (UI.hasNextCommand()) {
-            String command = UI.readCommand();
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
 
-            UI.showLine();
+            ui.showLine();
+            System.out.println(altair.getResponse(command));
+            ui.showLine();
 
-            try {
-                CommandType commandType = CommandType.from(command);
-
-                if (commandType == CommandType.BYE) {
-                    ensureNoArguments(command, "bye");
-                    UI.showGoodbye();
-                    break;
-                }
-
-                if (commandType == CommandType.LIST) {
-                    ensureNoArguments(command, "list");
-                    UI.showTaskList(tasks);
-                } else if (commandType == CommandType.FIND) {
-                    findTasks(command, tasks);
-                } else if (commandType == CommandType.MARK) {
-                    markTask(command, tasks);
-                } else if (commandType == CommandType.UNMARK) {
-                    unmarkTask(command, tasks);
-                } else if (commandType == CommandType.DELETE) {
-                    deleteTask(command, tasks);
-                } else {
-                    Task newTask = createTask(command);
-                    tasks.add(newTask);
-                    try {
-                        STORAGE.save(tasks);
-                    } catch (AltairException exception) {
-                        tasks.remove(tasks.size() - 1);
-                        throw exception;
-                    }
-                    UI.showAdded(newTask, tasks.size());
-                }
-            } catch (AltairException exception) {
-                UI.showError(exception.getMessage());
-            } finally {
-                UI.showLine();
+            if (altair.isExit()) {
+                break;
             }
         }
+    }
+
+    /**
+     * Creates the task described by a typed command, adds it to the list, and
+     * saves the updated list.
+     *
+     * @param command the complete command entered by the user.
+     * @return the confirmation text.
+     * @throws AltairException if the command is incomplete or unknown, or the save fails.
+     */
+    private String addTask(String command) throws AltairException {
+        Task newTask = createTask(command);
+        tasks.add(newTask);
+        try {
+            storage.save(tasks);
+        } catch (AltairException exception) {
+            tasks.remove(tasks.size() - 1);
+            throw exception;
+        }
+        return Ui.formatAdded(newTask, tasks.size());
     }
 
     /**
@@ -231,14 +327,14 @@ public class Altair {
     }
 
     /**
-     * Shows the tasks whose description contains the keyword from a
+     * Returns the tasks whose description contains the keyword from a
      * {@code find <keyword>} command.
      *
-     * @param command the command entered by the user
-     * @param tasks the current task collection
-     * @throws AltairException if the command has no search keyword
+     * @param command the command entered by the user.
+     * @return the formatted list of matching tasks.
+     * @throws AltairException if the command has no search keyword.
      */
-    private static void findTasks(String command, List<Task> tasks) throws AltairException {
+    private String findTasks(String command) throws AltairException {
         String keyword = textAfterCommand(command.trim(), "find");
         if (keyword.isEmpty()) {
             throw new AltairException("Please use: find <keyword>.");
@@ -250,19 +346,18 @@ public class Altair {
                 matches.add(task);
             }
         }
-        UI.showFoundTasks(matches);
+        return Ui.formatFoundTasks(matches);
     }
 
     /**
-     * Marks the task selected by a {@code mark <number>} command as done.
-     * Invalid mark commands are reported and do not become new tasks.
+     * Marks the task selected by a {@code mark <number>} command as done and
+     * saves the updated list.
      *
      * @param command the command entered by the user.
-     * @param tasks the current task collection.
-     * @throws AltairException if the command does not contain a valid task number.
+     * @return the confirmation text.
+     * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
-    private static void markTask(String command, List<Task> tasks)
-            throws AltairException {
+    private String markTask(String command) throws AltairException {
         int taskNumber = parseTaskNumber(command, "mark");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
@@ -272,26 +367,25 @@ public class Altair {
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsDone();
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks);
         } catch (AltairException exception) {
             if (!wasDone) {
                 task.markAsNotDone();
             }
             throw exception;
         }
-        UI.showMarked(task);
+        return Ui.formatMarked(task);
     }
 
     /**
-     * Marks the task selected by an {@code unmark <number>} command as not done.
-     * Invalid unmark commands are reported and do not become new tasks.
+     * Marks the task selected by an {@code unmark <number>} command as not done
+     * and saves the updated list.
      *
      * @param command the command entered by the user.
-     * @param tasks the current task collection.
-     * @throws AltairException if the command does not contain a valid task number.
+     * @return the confirmation text.
+     * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
-    private static void unmarkTask(String command, List<Task> tasks)
-            throws AltairException {
+    private String unmarkTask(String command) throws AltairException {
         int taskNumber = parseTaskNumber(command, "unmark");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
@@ -301,26 +395,25 @@ public class Altair {
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsNotDone();
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks);
         } catch (AltairException exception) {
             if (wasDone) {
                 task.markAsDone();
             }
             throw exception;
         }
-        UI.showUnmarked(task);
+        return Ui.formatUnmarked(task);
     }
 
     /**
-     * Deletes the task selected by a {@code delete <number>} command.
-     * Invalid delete commands are reported and leave the task collection unchanged.
+     * Deletes the task selected by a {@code delete <number>} command and saves
+     * the updated list.
      *
      * @param command the command entered by the user.
-     * @param tasks the current task collection.
-     * @throws AltairException if the command does not contain a valid task number.
+     * @return the confirmation text.
+     * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
-    private static void deleteTask(String command, List<Task> tasks)
-            throws AltairException {
+    private String deleteTask(String command) throws AltairException {
         int taskNumber = parseTaskNumber(command, "delete");
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
@@ -328,12 +421,12 @@ public class Altair {
 
         Task removedTask = tasks.remove(taskNumber - 1);
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks);
         } catch (AltairException exception) {
             tasks.add(taskNumber - 1, removedTask);
             throw exception;
         }
-        UI.showDeleted(removedTask, tasks.size());
+        return Ui.formatDeleted(removedTask, tasks.size());
     }
 
     /** Parses the single positive integer used by mark, unmark, and delete. */
