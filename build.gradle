@@ -57,7 +57,9 @@ test {
 application {
     // Entry point of the application. Must match the fully-qualified name
     // (package + class) of the class holding `public static void main`.
-    mainClass = 'altair.Altair'
+    // `altair.gui.Launcher` starts the JavaFX GUI; the text UI can still be
+    // run directly with `java ... altair.Altair`.
+    mainClass = 'altair.gui.Launcher'
 }
 
 jar {
