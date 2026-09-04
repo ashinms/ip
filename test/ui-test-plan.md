@@ -1,6 +1,9 @@
 # Altair UI Test Plan
 
-This plan tests the interactive console behavior of `Altair`.
+This plan tests the interactive console behavior of `Altair`. The app also has
+a JavaFX GUI (`altair.gui.Launcher`, started by `./gradlew run`), but the GUI is
+not covered here: it reuses the same `Altair.getResponse` logic exercised below,
+and console tests are simpler to run and diff exactly.
 
 - Project root: repository root (`.`)
 - Runtime: Java 25

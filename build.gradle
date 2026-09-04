@@ -20,6 +20,24 @@ dependencies {
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+
+    // JavaFX, added as per the SE-EDU JavaFX tutorial (Part 1). Every
+    // platform's artifact is listed so the build works on Windows, macOS,
+    // and Linux without change.
+    String javaFxVersion = '17.0.7'
+
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
 }
 
 test {
@@ -39,7 +57,9 @@ test {
 application {
     // Entry point of the application. Must match the fully-qualified name
     // (package + class) of the class holding `public static void main`.
-    mainClass = 'altair.Altair'
+    // `altair.gui.Launcher` starts the JavaFX GUI; the text UI can still be
+    // run directly with `java ... altair.Altair`.
+    mainClass = 'altair.gui.Launcher'
 }
 
 jar {
