@@ -11,9 +11,9 @@ and console tests are simpler to run and diff exactly.
 - Output comparison: exact, including spaces and line breaks
 - Test runner: `.codex/skills/test-ui/scripts/run_ui_tests.py`
 - Preparation: Compile from the project root with `javac -d out/production/ip $(find src/main/java -name '*.java')` before running the plan. The sources now live in the `altair` package tree, so the class is launched as `altair.Altair`.
-- Persistence: Successful task-list changes rewrite `./data/duke.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
+- Persistence: Successful task-list changes rewrite `./data/altair.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
 - Isolation: Test cases 1–9 and 12–15 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
-- Missing data: Starting without `./data/duke.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
+- Missing data: Starting without `./data/altair.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
 - Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace.
 
 ## Test case 1: Start and exit
@@ -565,7 +565,7 @@ ____________________________________________________________
 
 ## Test case 10: Save a changed task list
 
-Aim: Verify that a happy-path task-list change sequence completes normally while persistence is exercised. After this UI session, confirm that `./data/duke.txt` contains the final task state.
+Aim: Verify that a happy-path task-list change sequence completes normally while persistence is exercised. After this UI session, confirm that `./data/altair.txt` contains the final task state.
 
 ### Step 1: Add, mark, and exit
 

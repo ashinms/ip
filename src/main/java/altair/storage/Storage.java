@@ -38,7 +38,7 @@ public class Storage {
     /**
      * Creates a storage backed by the given file path.
      *
-     * @param filePath the location of the saved task list, e.g. {@code ./data/duke.txt}.
+     * @param filePath the location of the saved task list, e.g. {@code ./data/altair.txt}.
      */
     public Storage(String filePath) {
         this.file = Path.of(filePath);

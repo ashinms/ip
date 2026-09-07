@@ -28,7 +28,7 @@ import altair.ui.Ui;
 public class Altair {
 
     /** The save file used when the application is started normally. */
-    private static final String DEFAULT_STORAGE_PATH = "./data/duke.txt";
+    private static final String DEFAULT_STORAGE_PATH = "./data/altair.txt";
 
     /** The date format accepted in commands. */
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -53,7 +53,7 @@ public class Altair {
      * {@link #getLoadError()} so the caller (text UI or GUI) can decide how to
      * report it, and the task list starts empty.</p>
      *
-     * @param filePath the location of the save file, e.g. {@code ./data/duke.txt}.
+     * @param filePath the location of the save file, e.g. {@code ./data/altair.txt}.
      */
     public Altair(String filePath) {
         this.storage = new Storage(filePath);

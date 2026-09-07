@@ -33,14 +33,14 @@ public class AltairTest {
     @TempDir
     private Path tempDir;
 
-    /** Creates an {@code Altair} backed by {@code duke.txt} in the temporary directory. */
+    /** Creates an {@code Altair} backed by {@code altair.txt} in the temporary directory. */
     private Altair newAltair() {
-        return new Altair(tempDir.resolve("duke.txt").toString());
+        return new Altair(tempDir.resolve("altair.txt").toString());
     }
 
     /** Reads the lines currently saved in the temporary save file. */
     private List<String> savedLines() throws IOException {
-        Path file = tempDir.resolve("duke.txt");
+        Path file = tempDir.resolve("altair.txt");
         return Files.exists(file) ? Files.readAllLines(file) : List.of();
     }
 
@@ -269,7 +269,7 @@ public class AltairTest {
 
     @Test
     public void construct_corruptedSaveFile_reportsLoadErrorAndStartsEmpty() throws Exception {
-        Files.writeString(tempDir.resolve("duke.txt"), "not a valid task line\n");
+        Files.writeString(tempDir.resolve("altair.txt"), "not a valid task line\n");
 
         Altair altair = newAltair();
 

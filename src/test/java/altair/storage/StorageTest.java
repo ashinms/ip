@@ -60,8 +60,8 @@ public class StorageTest {
 
     @Test
     public void save_emptyList_writesAnEmptyFile() throws Exception {
-        Path path = tempDir.resolve("duke.txt");
-        storageBackedBy("duke.txt").save(List.of());
+        Path path = tempDir.resolve("altair.txt");
+        storageBackedBy("altair.txt").save(List.of());
 
         assertTrue(Files.exists(path));
         assertEquals(List.of(), Files.readAllLines(path));
@@ -70,10 +70,10 @@ public class StorageTest {
     @Test
     public void save_missingParentDirectory_isCreated() throws Exception {
         // The save file lives in a "data" sub-folder that does not exist yet.
-        Storage storage = storageBackedBy("data/duke.txt");
+        Storage storage = storageBackedBy("data/altair.txt");
         storage.save(List.of(new Todo("read book")));
 
-        assertTrue(Files.exists(tempDir.resolve("data/duke.txt")));
+        assertTrue(Files.exists(tempDir.resolve("data/altair.txt")));
     }
 
     @Test
@@ -85,25 +85,25 @@ public class StorageTest {
                 deadline,
                 new Event("orientation camp", LocalDate.of(2019, 10, 15), LocalDate.of(2019, 10, 20)));
 
-        storageBackedBy("duke.txt").save(tasks);
+        storageBackedBy("altair.txt").save(tasks);
 
         assertEquals(
                 List.of(
                         "T | 0 | read book",
                         "D | 1 | return book | 2019-10-15",
                         "E | 0 | orientation camp | 2019-10-15 - 2019-10-20"),
-                Files.readAllLines(tempDir.resolve("duke.txt")));
+                Files.readAllLines(tempDir.resolve("altair.txt")));
     }
 
     @Test
     public void save_calledAgain_replacesThePreviousContents() throws Exception {
-        Storage storage = storageBackedBy("duke.txt");
+        Storage storage = storageBackedBy("altair.txt");
         storage.save(List.of(new Todo("first"), new Todo("second")));
 
         storage.save(List.of(new Todo("only one now")));
 
         assertEquals(List.of("T | 0 | only one now"),
-                Files.readAllLines(tempDir.resolve("duke.txt")));
+                Files.readAllLines(tempDir.resolve("altair.txt")));
     }
 
     // ----- load: absent, empty, and blank input -----
@@ -116,23 +116,23 @@ public class StorageTest {
 
     @Test
     public void load_emptyFile_returnsEmptyList() throws Exception {
-        writeSaveFile("duke.txt");
-        assertEquals(List.of(), storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt");
+        assertEquals(List.of(), storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_blankLines_areSkipped() throws Exception {
-        writeSaveFile("duke.txt", "", "   ", "T | 0 | read book", "");
-        assertEquals(1, storageBackedBy("duke.txt").load().size());
+        writeSaveFile("altair.txt", "", "   ", "T | 0 | read book", "");
+        assertEquals(1, storageBackedBy("altair.txt").load().size());
     }
 
     // ----- load: each task type is restored correctly -----
 
     @Test
     public void load_todoLine_restoresTodoWithDescription() throws Exception {
-        writeSaveFile("duke.txt", "T | 0 | read book");
+        writeSaveFile("altair.txt", "T | 0 | read book");
 
-        List<Task> tasks = storageBackedBy("duke.txt").load();
+        List<Task> tasks = storageBackedBy("altair.txt").load();
 
         assertEquals(1, tasks.size());
         assertEquals("read book", tasks.get(0).getDescription());
@@ -141,27 +141,27 @@ public class StorageTest {
 
     @Test
     public void load_doneStatusFlag_restoresTaskAsDone() throws Exception {
-        writeSaveFile("duke.txt", "T | 1 | read book");
+        writeSaveFile("altair.txt", "T | 1 | read book");
 
-        List<Task> tasks = storageBackedBy("duke.txt").load();
+        List<Task> tasks = storageBackedBy("altair.txt").load();
 
         assertEquals("X", tasks.get(0).getStatusIcon());
     }
 
     @Test
     public void load_deadlineLine_restoresDeadlineWithParsedDate() throws Exception {
-        writeSaveFile("duke.txt", "D | 0 | return book | 2019-10-15");
+        writeSaveFile("altair.txt", "D | 0 | return book | 2019-10-15");
 
-        List<Task> tasks = storageBackedBy("duke.txt").load();
+        List<Task> tasks = storageBackedBy("altair.txt").load();
 
         assertEquals("[D][ ] return book (by: Oct 15 2019)", tasks.get(0).toString());
     }
 
     @Test
     public void load_eventLine_restoresEventWithBothParsedDates() throws Exception {
-        writeSaveFile("duke.txt", "E | 0 | orientation camp | 2019-10-15 - 2019-10-20");
+        writeSaveFile("altair.txt", "E | 0 | orientation camp | 2019-10-15 - 2019-10-20");
 
-        List<Task> tasks = storageBackedBy("duke.txt").load();
+        List<Task> tasks = storageBackedBy("altair.txt").load();
 
         assertEquals("[E][ ] orientation camp (from: Oct 15 2019 to: Oct 20 2019)",
                 tasks.get(0).toString());
@@ -171,55 +171,55 @@ public class StorageTest {
 
     @Test
     public void load_lineWithTooFewFields_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "garbage");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "garbage");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_unknownTypeMarker_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "X | 0 | mystery task");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "X | 0 | mystery task");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_invalidStatusValue_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "T | 2 | read book");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "T | 2 | read book");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_emptyDescription_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "T | 0 | ");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "T | 0 | ");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_deadlineWithoutDateField_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "D | 0 | return book");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "D | 0 | return book");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_deadlineWithUnparseableDate_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "D | 0 | return book | 15-10-2019");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "D | 0 | return book | 15-10-2019");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_eventWithOnlyOneDate_throwsAltairException() throws Exception {
-        writeSaveFile("duke.txt", "E | 0 | orientation camp | 2019-10-15");
-        assertThrows(AltairException.class, () -> storageBackedBy("duke.txt").load());
+        writeSaveFile("altair.txt", "E | 0 | orientation camp | 2019-10-15");
+        assertThrows(AltairException.class, () -> storageBackedBy("altair.txt").load());
     }
 
     @Test
     public void load_malformedLine_reportsTheOffendingLineNumber() throws Exception {
-        writeSaveFile("duke.txt",
+        writeSaveFile("altair.txt",
                 "T | 0 | valid one",
                 "T | 0 | valid two",
                 "T | bad | broken three");
 
         AltairException thrown = assertThrows(AltairException.class,
-                () -> storageBackedBy("duke.txt").load());
+                () -> storageBackedBy("altair.txt").load());
 
         assertTrue(thrown.getMessage().contains("line 3"),
                 "expected the error to name line 3 but was: " + thrown.getMessage());
@@ -237,7 +237,7 @@ public class StorageTest {
         event.markAsDone();
         List<Task> original = List.of(todo, deadline, event);
 
-        Storage storage = storageBackedBy("duke.txt");
+        Storage storage = storageBackedBy("altair.txt");
         storage.save(original);
         List<Task> reloaded = storage.load();
 

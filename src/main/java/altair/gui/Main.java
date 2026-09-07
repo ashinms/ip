@@ -20,7 +20,7 @@ import altair.Altair;
 public class Main extends Application {
 
     /** The save file the GUI reads from and writes to; shared with the text UI. */
-    private static final String STORAGE_PATH = "./data/duke.txt";
+    private static final String STORAGE_PATH = "./data/altair.txt";
 
     /** The task manager that produces the replies shown in the window. */
     private final Altair altair = new Altair(STORAGE_PATH);
