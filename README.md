@@ -2,6 +2,35 @@
 
 This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
 
+## Features
+
+- Add three kinds of tasks: `todo`, `deadline` (with a due date), and `event`
+  (with a start and end date).
+- `list` all tasks, `mark` / `unmark` them as done, and `delete` them.
+- `find` tasks whose description contains a keyword.
+- Automatic save to `./data/altair.txt` after every change, reloaded on start-up.
+- Runs as a JavaFX GUI or as a plain text UI in the terminal; both share the same
+  command handling.
+
+Dates are entered in `yyyy-MM-dd` format and shown back as `MMM dd yyyy`.
+
+## Usage
+
+| Command | Example |
+| --- | --- |
+| `todo <description>` | `todo read book` |
+| `deadline <description> /by <yyyy-MM-dd>` | `deadline return book /by 2025-10-15` |
+| `event <description> /from <yyyy-MM-dd> /to <yyyy-MM-dd>` | `event orientation /from 2025-08-01 /to 2025-08-03` |
+| `list` | `list` |
+| `mark <task number>` | `mark 2` |
+| `unmark <task number>` | `unmark 2` |
+| `delete <task number>` | `delete 2` |
+| `find <keyword>` | `find book` |
+| `bye` | `bye` |
+
+The full user guide, with sample output for each command, is in
+[`docs/README.md`](docs/README.md).
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
