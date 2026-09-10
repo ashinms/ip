@@ -198,10 +198,8 @@ public class Altair {
     }
 
     /**
-     * Creates the task represented by a user command.
-     *
-     * <p>Typed commands use markers so descriptions and date strings may
-     * contain spaces.</p>
+     * Creates the task represented by a user command by dispatching to the
+     * helper for its command type.
      *
      * @param command the complete command entered by the user.
      * @return the new task.
@@ -211,70 +209,103 @@ public class Altair {
         String trimmed = command == null ? "" : command.trim();
 
         switch (CommandType.from(trimmed)) {
-        case TODO: {
-            String description = textAfterCommand(trimmed, "todo");
-            if (description.isEmpty()) {
-                throw new AltairException("I'm afraid the description of a todo cannot be empty.");
-            }
-            validateStorableText(description);
-            return new Todo(description);
-        }
-
-        case DEADLINE: {
-            String remainder = textAfterCommand(trimmed, "deadline");
-            String[] words = splitWords(remainder);
-            int byIndex = findMarker(words, "/by", 0);
-            if (words.length == 0 || byIndex == 0) {
-                throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
-            }
-            if (byIndex < 0) {
-                throw new AltairException("A deadline needs a date after /by.");
-            }
-
-            String description = joinWords(words, 0, byIndex);
-            String byText = joinWords(words, byIndex + 1, words.length);
-            if (description.isEmpty()) {
-                throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
-            }
-            if (byText.isEmpty()) {
-                throw new AltairException("A deadline needs a date after /by.");
-            }
-            validateStorableText(description);
-            validateStorableText(byText);
-            return new Deadline(description, parseDate(byText, "A deadline date"));
-        }
-
-        case EVENT: {
-            String remainder = textAfterCommand(trimmed, "event");
-            String[] words = splitWords(remainder);
-            int fromIndex = findMarker(words, "/from", 0);
-            int toIndex = findMarker(words, "/to", fromIndex < 0 ? 0 : fromIndex + 1);
-            if (words.length == 0 || fromIndex == 0) {
-                throw new AltairException("I'm afraid the description of an event cannot be empty.");
-            }
-            if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex + 1) {
-                throw new AltairException("An event needs /from and /to dates.");
-            }
-
-            String description = joinWords(words, 0, fromIndex);
-            String fromText = joinWords(words, fromIndex + 1, toIndex);
-            String toText = joinWords(words, toIndex + 1, words.length);
-            if (description.isEmpty()) {
-                throw new AltairException("I'm afraid the description of an event cannot be empty.");
-            }
-            if (fromText.isEmpty() || toText.isEmpty()) {
-                throw new AltairException("An event needs /from and /to dates.");
-            }
-            validateStorableText(description);
-            validateStorableText(fromText);
-            validateStorableText(toText);
-            return new Event(description, parseDate(fromText, "An event start date"),
-                    parseDate(toText, "An event end date"));
-        }
-
+        case TODO:
+            return createTodo(trimmed);
+        case DEADLINE:
+            return createDeadline(trimmed);
+        case EVENT:
+            return createEvent(trimmed);
         default:
             throw new AltairException("I do not understand your command. Try again, perhaps?");
         }
+    }
+
+    /**
+     * Creates the {@link Todo} described by a {@code todo <description>} command.
+     *
+     * @param command the trimmed command entered by the user.
+     * @return the new todo.
+     * @throws AltairException if the description is missing or contains '|'.
+     */
+    private static Todo createTodo(String command) throws AltairException {
+        String description = textAfterCommand(command, "todo");
+        if (description.isEmpty()) {
+            throw new AltairException("I'm afraid the description of a todo cannot be empty.");
+        }
+        validateStorableText(description);
+        return new Todo(description);
+    }
+
+    /**
+     * Creates the {@link Deadline} described by a
+     * {@code deadline <description> /by <date>} command.
+     *
+     * <p>Markers let the description and date contain spaces.</p>
+     *
+     * @param command the trimmed command entered by the user.
+     * @return the new deadline.
+     * @throws AltairException if the description or date is missing or malformed, or a field contains '|'.
+     */
+    private static Deadline createDeadline(String command) throws AltairException {
+        String remainder = textAfterCommand(command, "deadline");
+        String[] words = splitWords(remainder);
+        int byIndex = findMarker(words, "/by", 0);
+        if (words.length == 0 || byIndex == 0) {
+            throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
+        }
+        if (byIndex < 0) {
+            throw new AltairException("A deadline needs a date after /by.");
+        }
+
+        String description = joinWords(words, 0, byIndex);
+        String byText = joinWords(words, byIndex + 1, words.length);
+        if (description.isEmpty()) {
+            throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
+        }
+        if (byText.isEmpty()) {
+            throw new AltairException("A deadline needs a date after /by.");
+        }
+        validateStorableText(description);
+        validateStorableText(byText);
+        return new Deadline(description, parseDate(byText, "A deadline date"));
+    }
+
+    /**
+     * Creates the {@link Event} described by an
+     * {@code event <description> /from <date> /to <date>} command.
+     *
+     * <p>Markers let the description and dates contain spaces.</p>
+     *
+     * @param command the trimmed command entered by the user.
+     * @return the new event.
+     * @throws AltairException if the description or a date is missing or malformed, or a field contains '|'.
+     */
+    private static Event createEvent(String command) throws AltairException {
+        String remainder = textAfterCommand(command, "event");
+        String[] words = splitWords(remainder);
+        int fromIndex = findMarker(words, "/from", 0);
+        int toIndex = findMarker(words, "/to", fromIndex < 0 ? 0 : fromIndex + 1);
+        if (words.length == 0 || fromIndex == 0) {
+            throw new AltairException("I'm afraid the description of an event cannot be empty.");
+        }
+        if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex + 1) {
+            throw new AltairException("An event needs /from and /to dates.");
+        }
+
+        String description = joinWords(words, 0, fromIndex);
+        String fromText = joinWords(words, fromIndex + 1, toIndex);
+        String toText = joinWords(words, toIndex + 1, words.length);
+        if (description.isEmpty()) {
+            throw new AltairException("I'm afraid the description of an event cannot be empty.");
+        }
+        if (fromText.isEmpty() || toText.isEmpty()) {
+            throw new AltairException("An event needs /from and /to dates.");
+        }
+        validateStorableText(description);
+        validateStorableText(fromText);
+        validateStorableText(toText);
+        return new Event(description, parseDate(fromText, "An event start date"),
+                parseDate(toText, "An event end date"));
     }
 
     /**
@@ -352,6 +383,25 @@ public class Altair {
     }
 
     /**
+     * Parses and range-checks the task number shared by the mark, unmark, and
+     * delete commands.
+     *
+     * @param command the command entered by the user.
+     * @param operation the command word, used in the usage hint on error.
+     * @return the zero-based index of the referenced task in {@link #tasks}.
+     * @throws AltairException if there is no valid number or it is out of range.
+     */
+    private int resolveTaskIndex(String command, String operation) throws AltairException {
+        int taskNumber = parseTaskNumber(command, operation);
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new AltairException("That task number is not in your list.");
+        }
+        assert taskNumber >= 1 && taskNumber <= tasks.size()
+                : "the range check above guarantees taskNumber is a valid 1-based index";
+        return taskNumber - 1;
+    }
+
+    /**
      * Marks the task selected by a {@code mark <number>} command as done and
      * saves the updated list.
      *
@@ -360,14 +410,9 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String markTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "mark");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
-        assert taskNumber >= 1 && taskNumber <= tasks.size()
-                : "the range check above guarantees taskNumber is a valid 1-based index";
+        int index = resolveTaskIndex(command, "mark");
 
-        Task task = tasks.get(taskNumber - 1);
+        Task task = tasks.get(index);
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsDone();
         try {
@@ -390,14 +435,9 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String unmarkTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "unmark");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
-        assert taskNumber >= 1 && taskNumber <= tasks.size()
-                : "the range check above guarantees taskNumber is a valid 1-based index";
+        int index = resolveTaskIndex(command, "unmark");
 
-        Task task = tasks.get(taskNumber - 1);
+        Task task = tasks.get(index);
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsNotDone();
         try {
@@ -420,18 +460,13 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String deleteTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "delete");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
-        assert taskNumber >= 1 && taskNumber <= tasks.size()
-                : "the range check above guarantees taskNumber is a valid 1-based index";
+        int index = resolveTaskIndex(command, "delete");
 
-        Task removedTask = tasks.remove(taskNumber - 1);
+        Task removedTask = tasks.remove(index);
         try {
             storage.save(tasks);
         } catch (AltairException exception) {
-            tasks.add(taskNumber - 1, removedTask);
+            tasks.add(index, removedTask);
             throw exception;
         }
         return Ui.formatDeleted(removedTask, tasks.size());
