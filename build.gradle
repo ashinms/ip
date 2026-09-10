@@ -75,4 +75,7 @@ shadowJar {
 
 run {
     standardInput = System.in
+    // Run with `-ea` so the `assert` statements in the code are checked
+    // during development. Assertions stay off in the built JAR.
+    enableAssertions = true
 }

@@ -1,6 +1,7 @@
 package altair.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 
@@ -37,6 +38,12 @@ public class DeadlineTest {
     public void toString_singleDigitDay_zeroPadsDayInDisplayDate() {
         Deadline deadline = new Deadline("submit form", LocalDate.of(2020, 1, 5));
         assertEquals("[D][ ] submit form (by: Jan 05 2020)", deadline.toString());
+    }
+
+    @Test
+    public void constructor_nullDate_throwsAssertionError() {
+        // The constructor asserts the date was parsed before it was passed in.
+        assertThrows(AssertionError.class, () -> new Deadline("return book", null));
     }
 
     @Test
