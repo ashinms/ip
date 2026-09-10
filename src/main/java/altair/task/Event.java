@@ -28,6 +28,10 @@ public class Event extends Task {
      */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
+        // Both dates are always produced by LocalDate.parse in the caller,
+        // which returns a value or throws; a null here means a caller bug.
+        assert from != null && to != null
+                : "event start and end dates should be parsed before construction";
         this.from = from;
         this.to = to;
     }
