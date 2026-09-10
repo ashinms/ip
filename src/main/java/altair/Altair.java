@@ -381,6 +381,23 @@ public class Altair {
     }
 
     /**
+     * Parses and range-checks the task number shared by the mark, unmark, and
+     * delete commands.
+     *
+     * @param command the command entered by the user.
+     * @param operation the command word, used in the usage hint on error.
+     * @return the zero-based index of the referenced task in {@link #tasks}.
+     * @throws AltairException if there is no valid number or it is out of range.
+     */
+    private int resolveTaskIndex(String command, String operation) throws AltairException {
+        int taskNumber = parseTaskNumber(command, operation);
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new AltairException("That task number is not in your list.");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
      * Marks the task selected by a {@code mark <number>} command as done and
      * saves the updated list.
      *
@@ -389,12 +406,9 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String markTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "mark");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
+        int index = resolveTaskIndex(command, "mark");
 
-        Task task = tasks.get(taskNumber - 1);
+        Task task = tasks.get(index);
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsDone();
         try {
@@ -417,12 +431,9 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String unmarkTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "unmark");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
+        int index = resolveTaskIndex(command, "unmark");
 
-        Task task = tasks.get(taskNumber - 1);
+        Task task = tasks.get(index);
         boolean wasDone = task.getStatusIcon().equals("X");
         task.markAsNotDone();
         try {
@@ -445,16 +456,13 @@ public class Altair {
      * @throws AltairException if the command does not contain a valid task number, or the save fails.
      */
     private String deleteTask(String command) throws AltairException {
-        int taskNumber = parseTaskNumber(command, "delete");
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new AltairException("That task number is not in your list.");
-        }
+        int index = resolveTaskIndex(command, "delete");
 
-        Task removedTask = tasks.remove(taskNumber - 1);
+        Task removedTask = tasks.remove(index);
         try {
             storage.save(tasks);
         } catch (AltairException exception) {
-            tasks.add(taskNumber - 1, removedTask);
+            tasks.add(index, removedTask);
             throw exception;
         }
         return Ui.formatDeleted(removedTask, tasks.size());
