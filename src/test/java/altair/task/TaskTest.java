@@ -2,6 +2,7 @@ package altair.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,19 @@ import org.junit.jupiter.api.Test;
  */
 public class TaskTest {
 
-    // ----- getDescription -----
+    // ----- constructor -----
 
     @Test
     public void getDescription_returnsTextGivenToConstructor() {
         Task task = new Task("read book");
         assertEquals("read book", task.getDescription());
+    }
+
+    @Test
+    public void constructor_blankDescription_throwsAssertionError() {
+        // The constructor asserts that callers have already rejected blank
+        // descriptions; this also confirms assertions are enabled in the tests.
+        assertThrows(AssertionError.class, () -> new Task("   "));
     }
 
     // ----- getStatusIcon -----

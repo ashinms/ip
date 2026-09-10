@@ -118,6 +118,8 @@ public class Altair {
     public String getResponse(String command) {
         try {
             CommandType commandType = CommandType.from(command);
+            // from() falls back to UNKNOWN, so the switch below never sees null.
+            assert commandType != null : "CommandType.from returns UNKNOWN, never null";
 
             if (commandType == CommandType.BYE) {
                 ensureNoArguments(command, "bye");
@@ -359,6 +361,8 @@ public class Altair {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
         }
+        assert taskNumber >= 1 && taskNumber <= tasks.size()
+                : "the range check above guarantees taskNumber is a valid 1-based index";
 
         Task task = tasks.get(taskNumber - 1);
         boolean wasDone = task.getStatusIcon().equals("X");
@@ -387,6 +391,8 @@ public class Altair {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
         }
+        assert taskNumber >= 1 && taskNumber <= tasks.size()
+                : "the range check above guarantees taskNumber is a valid 1-based index";
 
         Task task = tasks.get(taskNumber - 1);
         boolean wasDone = task.getStatusIcon().equals("X");
@@ -415,6 +421,8 @@ public class Altair {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new AltairException("That task number is not in your list.");
         }
+        assert taskNumber >= 1 && taskNumber <= tasks.size()
+                : "the range check above guarantees taskNumber is a valid 1-based index";
 
         Task removedTask = tasks.remove(taskNumber - 1);
         try {
