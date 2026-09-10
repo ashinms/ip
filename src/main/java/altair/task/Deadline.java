@@ -24,6 +24,9 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDate by) {
         super(description);
+        // The date is always produced by LocalDate.parse in the caller, which
+        // returns a value or throws; a null here means a caller passed one.
+        assert by != null : "deadline date should be parsed before construction";
         this.by = by;
     }
 

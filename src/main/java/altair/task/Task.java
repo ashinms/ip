@@ -21,6 +21,11 @@ public class Task {
      * @param description the text describing the task.
      */
     public Task(String description) {
+        // Every caller (Altair.createTask, Storage.taskFromFileLine) rejects an
+        // empty description before reaching here, so a blank one signals a bug
+        // in the caller rather than bad user input.
+        assert description != null && !description.isBlank()
+                : "task description should be validated as non-blank before construction";
         this.description = description;
         this.isDone = false;
     }
