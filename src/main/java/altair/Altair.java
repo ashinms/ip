@@ -373,12 +373,9 @@ public class Altair {
             throw new AltairException("Please use: find <keyword>.");
         }
 
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.descriptionContains(keyword)) {
-                matches.add(task);
-            }
-        }
+        List<Task> matches = tasks.stream()
+                .filter(task -> task.descriptionContains(keyword))
+                .toList();
         return Ui.formatFoundTasks(matches);
     }
 
