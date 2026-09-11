@@ -43,6 +43,17 @@ public class Deadline extends Task {
     /**
      * {@inheritDoc}
      *
+     * <p>Two Deadlines with the same description are duplicates only if their
+     * due dates match too; different dates mean they are different commitments.</p>
+     */
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        return by.equals(((Deadline) other).by);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * <p>Appends the due date, so the saved line is {@code D | done | description | yyyy-MM-dd}.</p>
      */
     @Override

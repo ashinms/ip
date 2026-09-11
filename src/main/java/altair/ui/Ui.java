@@ -209,6 +209,29 @@ public class Ui {
     }
 
     /**
+     * Builds the warning shown when a new task duplicates one already in the
+     * list, asking the user to confirm before it is added.
+     *
+     * @param existing the existing task the new one duplicates.
+     * @return the warning text, ending with a y/n prompt.
+     */
+    public static String formatDuplicateWarning(Task existing) {
+        return "    This looks like a task you already have:\n"
+                + "      " + existing + "\n"
+                + "    Add it anyway? (y/n)";
+    }
+
+    /**
+     * Builds the confirmation shown after the user declines to add a flagged
+     * duplicate task.
+     *
+     * @return the confirmation text.
+     */
+    public static String formatDuplicateDeclined() {
+        return "    OK, I have not added that task.";
+    }
+
+    /**
      * Builds the confirmation shown after a task is marked as done.
      *
      * @param task the task that was marked.

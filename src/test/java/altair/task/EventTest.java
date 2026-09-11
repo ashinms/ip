@@ -1,6 +1,8 @@
 package altair.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
@@ -38,6 +40,21 @@ public class EventTest {
     public void toString_sameStartAndEndDate_showsThatDateTwice() {
         Event event = new Event("all-day workshop", FROM, FROM);
         assertEquals("[E][ ] all-day workshop (from: Oct 15 2019 to: Oct 15 2019)", event.toString());
+    }
+
+    @Test
+    public void isDuplicateOf_sameDescriptionAndDates_returnsTrue() {
+        Event first = new Event("project meeting", FROM, TO);
+        Event second = new Event("project meeting", FROM, TO);
+        assertTrue(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_sameDescriptionDifferentDates_returnsFalse() {
+        // A different date range makes this a different commitment, not a duplicate.
+        Event first = new Event("project meeting", FROM, TO);
+        Event second = new Event("project meeting", FROM, LocalDate.of(2019, 10, 21));
+        assertFalse(first.isDuplicateOf(second));
     }
 
     @Test

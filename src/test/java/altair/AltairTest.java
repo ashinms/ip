@@ -116,6 +116,58 @@ public class AltairTest {
                 altair.getResponse("todo bad | data"));
     }
 
+    // ----- duplicate detection -----
+
+    @Test
+    public void getResponse_duplicateTask_warnsAndDoesNotAddUntilConfirmed() throws Exception {
+        Altair altair = newAltair();
+        altair.getResponse("todo buy milk");
+
+        String response = altair.getResponse("todo buy milk");
+
+        assertEquals("    This looks like a task you already have:\n"
+                + "      [T][ ] buy milk\n"
+                + "    Add it anyway? (y/n)", response);
+        assertEquals(List.of("T | 0 | buy milk"), savedLines());
+    }
+
+    @Test
+    public void getResponse_duplicateConfirmedWithY_addsAndSavesTheSecondTask() throws Exception {
+        Altair altair = newAltair();
+        altair.getResponse("todo buy milk");
+        altair.getResponse("todo buy milk");
+
+        String response = altair.getResponse("Y");
+
+        assertEquals("    Copy. Your task has been added:\n"
+                + "      [T][ ] buy milk\n"
+                + "    Now you have 2 tasks in the list.", response);
+        assertEquals(List.of("T | 0 | buy milk", "T | 0 | buy milk"), savedLines());
+    }
+
+    @Test
+    public void getResponse_duplicateDeclinedWithNo_doesNotAddTheSecondTask() {
+        Altair altair = newAltair();
+        altair.getResponse("todo buy milk");
+        altair.getResponse("todo buy milk");
+
+        assertEquals("    OK, I have not added that task.", altair.getResponse("no"));
+        assertEquals("     The following are your tasks\n"
+                + "     1.[T][ ] buy milk", altair.getResponse("list"));
+    }
+
+    @Test
+    public void getResponse_duplicateThenUnrelatedCommand_cancelsPromptAndRunsThatCommand() {
+        Altair altair = newAltair();
+        altair.getResponse("todo buy milk");
+        altair.getResponse("todo buy milk");
+
+        // "list" is neither y/n, so the pending duplicate is dropped and this
+        // is processed as an ordinary command instead of a bad answer.
+        assertEquals("     The following are your tasks\n"
+                + "     1.[T][ ] buy milk", altair.getResponse("list"));
+    }
+
     // ----- listing and finding -----
 
     @Test

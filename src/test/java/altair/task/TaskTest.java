@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -73,6 +75,48 @@ public class TaskTest {
     public void descriptionContains_keywordAbsent_returnsFalse() {
         Task task = new Task("read book");
         assertFalse(task.descriptionContains("milk"));
+    }
+
+    // ----- isDuplicateOf -----
+
+    @Test
+    public void isDuplicateOf_sameDescriptionAndType_returnsTrue() {
+        Task first = new Task("read book");
+        Task second = new Task("read book");
+        assertTrue(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_descriptionDiffersInCaseAndSpacing_returnsTrue() {
+        // Comparison ignores case and collapses internal whitespace, so a typo
+        // with extra spaces still counts as the same description.
+        Task first = new Task("read book");
+        Task second = new Task("READ   book");
+        assertTrue(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_differentDescription_returnsFalse() {
+        Task first = new Task("read book");
+        Task second = new Task("buy milk");
+        assertFalse(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_completionStatusIgnored_returnsTrue() {
+        Task first = new Task("read book");
+        Task second = new Task("read book");
+        second.markAsDone();
+        assertTrue(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_sameDescriptionDifferentTaskType_returnsTrue() {
+        // Different concrete types with the same wording are still flagged,
+        // even though a Deadline carries a date and a Todo does not.
+        Task todo = new Todo("read book");
+        Task deadline = new Deadline("read book", LocalDate.of(2019, 10, 15));
+        assertTrue(todo.isDuplicateOf(deadline));
     }
 
     // ----- markAsDone / markAsNotDone -----
