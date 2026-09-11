@@ -1,7 +1,9 @@
 package altair.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
@@ -38,6 +40,21 @@ public class DeadlineTest {
     public void toString_singleDigitDay_zeroPadsDayInDisplayDate() {
         Deadline deadline = new Deadline("submit form", LocalDate.of(2020, 1, 5));
         assertEquals("[D][ ] submit form (by: Jan 05 2020)", deadline.toString());
+    }
+
+    @Test
+    public void isDuplicateOf_sameDescriptionAndDate_returnsTrue() {
+        Deadline first = new Deadline("return book", BY);
+        Deadline second = new Deadline("return book", BY);
+        assertTrue(first.isDuplicateOf(second));
+    }
+
+    @Test
+    public void isDuplicateOf_sameDescriptionDifferentDate_returnsFalse() {
+        // Different due dates make these different commitments, not duplicates.
+        Deadline first = new Deadline("return book", BY);
+        Deadline second = new Deadline("return book", LocalDate.of(2020, 1, 5));
+        assertFalse(first.isDuplicateOf(second));
     }
 
     @Test

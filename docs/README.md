@@ -37,6 +37,8 @@ Notes that apply to every command:
 - Task descriptions and dates may contain spaces, but not the `|` character
   (it is used in the save file).
 - Task numbers are the numbers shown by `list`, starting from 1.
+- Adding a task whose description matches one already in the list asks for
+  confirmation first (see [Duplicate tasks](#duplicate-tasks) below).
 
 ## Adding a todo: `todo`
 
@@ -85,6 +87,36 @@ Copy. Your task has been added:
   [E][ ] orientation (from: Aug 01 2025 to: Aug 03 2025)
 Now you have 3 tasks in the list.
 ```
+
+## Duplicate tasks
+
+Before a `todo`, `deadline`, or `event` is added, Altair checks whether its
+description matches a task already in the list (ignoring case and extra
+spacing). If it does, Altair asks for confirmation instead of adding it right
+away.
+
+Two tasks of the *same* type (two Deadlines, or two Events) with the same
+description but different dates are **not** flagged &mdash; different dates
+mean a different commitment. Tasks of *different* types with the same
+description are always flagged, since a due date or time range isn't what
+makes them the same task or not.
+
+Example: adding `buy milk` a second time.
+
+```
+This looks like a task you already have:
+  [T][ ] buy milk
+Add it anyway? (y/n)
+```
+
+Answer `y` or `yes` to add it anyway, or `n`/`no` to leave the list unchanged:
+
+```
+OK, I have not added that task.
+```
+
+Typing anything else instead of an answer (including a new command) drops the
+pending task and is handled as that new command instead.
 
 ## Listing all tasks: `list`
 

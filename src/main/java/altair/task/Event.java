@@ -49,6 +49,19 @@ public class Event extends Task {
     /**
      * {@inheritDoc}
      *
+     * <p>Two Events with the same description are duplicates only if both their
+     * start and end dates match too; a different date range means they are
+     * different commitments.</p>
+     */
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        Event otherEvent = (Event) other;
+        return from.equals(otherEvent.from) && to.equals(otherEvent.to);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * <p>Appends the start and end dates as {@code from - to}, so the saved line is
      * {@code E | done | description | yyyy-MM-dd - yyyy-MM-dd}.</p>
      */

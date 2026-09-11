@@ -46,6 +46,13 @@ public class Altair {
     private boolean isExit;
 
     /**
+     * A newly created task awaiting the user's y/n duplicate confirmation, or
+     * {@code null} when no confirmation is pending. Never persisted: the task
+     * has not been added yet.
+     */
+    private Task pendingDuplicateTask;
+
+    /**
      * Creates a task manager backed by the given save file, loading any tasks
      * already stored there.
      *
@@ -117,6 +124,13 @@ public class Altair {
      */
     public String getResponse(String command) {
         try {
+            if (pendingDuplicateTask != null) {
+                String resolution = resolvePendingDuplicate(command);
+                if (resolution != null) {
+                    return resolution;
+                }
+            }
+
             CommandType commandType = CommandType.from(command);
             // from() falls back to UNKNOWN, so the switch below never sees null.
             assert commandType != null : "CommandType.from returns UNKNOWN, never null";
@@ -178,15 +192,47 @@ public class Altair {
     }
 
     /**
-     * Creates the task described by a typed command, adds it to the list, and
-     * saves the updated list.
+     * Creates the task described by a typed command. If it duplicates a task
+     * already in the list, the add is held back pending a y/n confirmation
+     * instead of being added immediately.
      *
      * @param command the complete command entered by the user.
-     * @return the confirmation text.
+     * @return the confirmation text, or a duplicate-confirmation prompt.
      * @throws AltairException if the command is incomplete or unknown, or the save fails.
      */
     private String addTask(String command) throws AltairException {
         Task newTask = createTask(command);
+        Task duplicate = findDuplicate(newTask);
+        if (duplicate != null) {
+            pendingDuplicateTask = newTask;
+            return Ui.formatDuplicateWarning(duplicate);
+        }
+        return commitTask(newTask);
+    }
+
+    /**
+     * Finds the first existing task that a new task would duplicate.
+     *
+     * @param newTask the task about to be added.
+     * @return the first matching existing task, or {@code null} if none match.
+     */
+    private Task findDuplicate(Task newTask) {
+        for (Task task : tasks) {
+            if (newTask.isDuplicateOf(task)) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adds a task to the list and saves the updated list.
+     *
+     * @param newTask the task to add.
+     * @return the confirmation text.
+     * @throws AltairException if the save fails.
+     */
+    private String commitTask(Task newTask) throws AltairException {
         tasks.add(newTask);
         try {
             storage.save(tasks);
@@ -195,6 +241,35 @@ public class Altair {
             throw exception;
         }
         return Ui.formatAdded(newTask, tasks.size());
+    }
+
+    /**
+     * Resolves a pending duplicate-task confirmation using the next line the
+     * user types.
+     *
+     * <p>A {@code y}/{@code yes} answer adds and saves the pending task; a
+     * {@code n}/{@code no} answer discards it. Anything else is treated as the
+     * user ignoring the prompt: the pending task is silently dropped so the
+     * caller can process the same input as an ordinary command instead.</p>
+     *
+     * @param command the line typed while a confirmation was pending.
+     * @return the response for a yes/no answer, or {@code null} if the input
+     *     was neither and should be handled as a new command.
+     * @throws AltairException if confirming the add fails to save.
+     */
+    private String resolvePendingDuplicate(String command) throws AltairException {
+        String answer = command == null ? "" : command.trim().toLowerCase(Locale.ROOT);
+        if (answer.equals("y") || answer.equals("yes")) {
+            Task confirmedTask = pendingDuplicateTask;
+            pendingDuplicateTask = null;
+            return commitTask(confirmedTask);
+        }
+        if (answer.equals("n") || answer.equals("no")) {
+            pendingDuplicateTask = null;
+            return Ui.formatDuplicateDeclined();
+        }
+        pendingDuplicateTask = null;
+        return null;
     }
 
     /**

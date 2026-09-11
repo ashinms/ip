@@ -52,12 +52,60 @@ public class Task {
      * Returns whether this task's description contains the given text,
      * ignoring case.
      *
-     * @param keyword the text to search for
-     * @return {@code true} if the description contains {@code keyword}
+     * @param keyword the text to search for.
+     * @return {@code true} if the description contains {@code keyword}.
      */
     public boolean descriptionContains(String keyword) {
         return description.toLowerCase(Locale.ROOT)
                 .contains(keyword.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Reports whether this task should be flagged as a duplicate of another.
+     *
+     * <p>Two tasks duplicate each other when their descriptions match, ignoring
+     * case and whitespace differences. If they are also the same concrete task
+     * type, their schedules must match too &mdash; two {@link Deadline}s (or two
+     * {@link Event}s) with different dates are different commitments, not
+     * duplicates, even though their wording is identical. Completion status
+     * never affects the result.</p>
+     *
+     * @param other the task to compare against.
+     * @return {@code true} if {@code other} should be flagged as a duplicate.
+     */
+    public final boolean isDuplicateOf(Task other) {
+        if (!hasSameDescription(other)) {
+            return false;
+        }
+        if (getClass() != other.getClass()) {
+            return true;
+        }
+        return hasSameSchedule(other);
+    }
+
+    /** Compares descriptions ignoring case and differences in whitespace. */
+    private boolean hasSameDescription(Task other) {
+        return normalizedDescription().equals(other.normalizedDescription());
+    }
+
+    /** Collapses internal whitespace so accidental extra spaces do not hide a duplicate. */
+    private String normalizedDescription() {
+        return description.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Reports whether this task's schedule, if any, matches another task's, for
+     * two tasks already known to be the same concrete type.
+     *
+     * <p>The base {@link Task} (and {@link Todo}) carry no schedule, so any two
+     * of them match trivially. {@link Deadline} and {@link Event} override this
+     * to compare their date fields.</p>
+     *
+     * @param other another task of this exact same class.
+     * @return {@code true} if the schedules match, or this task type has none.
+     */
+    protected boolean hasSameSchedule(Task other) {
+        return true;
     }
 
     /** Marks this task as done. */
