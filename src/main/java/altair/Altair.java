@@ -45,6 +45,9 @@ public class Altair {
     /** Set once the user issues a valid {@code bye} command. */
     private boolean isExit;
 
+    /** Whether the most recent {@link #getResponse(String)} call returned an error. */
+    private boolean hasError;
+
     /**
      * A newly created task awaiting the user's y/n duplicate confirmation, or
      * {@code null} when no confirmation is pending. Never persisted: the task
@@ -96,6 +99,16 @@ public class Altair {
     }
 
     /**
+     * Reports whether the most recent {@link #getResponse(String)} call
+     * returned an error message.
+     *
+     * @return {@code true} if the last response was an error.
+     */
+    public boolean hasError() {
+        return hasError;
+    }
+
+    /**
      * Returns the greeting shown when the GUI starts.
      *
      * <p>Unlike the text UI greeting this has no divider lines or ASCII banner,
@@ -123,6 +136,7 @@ public class Altair {
      * @return the response text, without a trailing newline.
      */
     public String getResponse(String command) {
+        hasError = false;
         try {
             if (pendingDuplicateTask != null) {
                 String resolution = resolvePendingDuplicate(command);
@@ -157,6 +171,7 @@ public class Altair {
                 return addTask(command);
             }
         } catch (AltairException exception) {
+            hasError = true;
             return Ui.formatError(exception.getMessage());
         }
     }

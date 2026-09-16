@@ -302,6 +302,37 @@ public class AltairTest {
         assertFalse(altair.isExit());
     }
 
+    // ----- error flag for the GUI -----
+
+    @Test
+    public void hasError_afterUnknownCommand_isTrue() {
+        Altair altair = newAltair();
+
+        altair.getResponse("blah");
+
+        assertTrue(altair.hasError());
+    }
+
+    @Test
+    public void hasError_afterSuccessfulTodo_isFalse() {
+        Altair altair = newAltair();
+
+        altair.getResponse("todo buy milk");
+
+        assertFalse(altair.hasError());
+    }
+
+    @Test
+    public void hasError_resetsOnNextValidCommand_isFalse() {
+        Altair altair = newAltair();
+        altair.getResponse("blah");
+        assertTrue(altair.hasError());
+
+        altair.getResponse("todo buy milk");
+
+        assertFalse(altair.hasError());
+    }
+
     // ----- persistence across instances -----
 
     @Test
