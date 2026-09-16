@@ -151,7 +151,7 @@ public class Ui {
      * @return the indented explanation.
      */
     public static String formatError(String message) {
-        return "    I'm afraid that won't do — " + message;
+        return "    I'm afraid that won't do. " + message;
     }
 
     /**

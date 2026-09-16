@@ -359,10 +359,10 @@ ____________________________________________________________
 Greetings. Altair, at your service. How may I be of assistance?
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — I'm afraid the description of a todo cannot be empty.
+    I'm afraid that won't do. The description of a todo cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — I do not understand your command. Try again, perhaps?
+    I'm afraid that won't do. I do not understand your command. Try again, perhaps?
 ____________________________________________________________
 ____________________________________________________________
     Very well. I shall be here when next you require me.
@@ -405,16 +405,16 @@ ____________________________________________________________
 Greetings. Altair, at your service. How may I be of assistance?
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — A deadline needs a date after /by.
+    I'm afraid that won't do. A deadline needs a date after /by.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — I'm afraid the description of a deadline cannot be empty.
+    I'm afraid that won't do. The description of a deadline cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — An event needs /from and /to dates.
+    I'm afraid that won't do. An event needs /from and /to dates.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — I'm afraid the description of an event cannot be empty.
+    I'm afraid that won't do. The description of an event cannot be empty.
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
@@ -469,22 +469,22 @@ ____________________________________________________________
     Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use: mark <task number>.
+    I'm afraid that won't do. Please use: mark <task number>.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — That task number is not in your list.
+    I'm afraid that won't do. That task number is not in your list.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use a valid task number.
+    I'm afraid that won't do. Please use a valid task number.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use: delete <task number>.
+    I'm afraid that won't do. Please use: delete <task number>.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use a valid task number.
+    I'm afraid that won't do. Please use a valid task number.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — That task number is not in your list.
+    I'm afraid that won't do. That task number is not in your list.
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
@@ -737,7 +737,7 @@ ____________________________________________________________
 Greetings. Altair, at your service. How may I be of assistance?
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Task details cannot contain the '|' character.
+    I'm afraid that won't do. Task details cannot contain the '|' character.
 ____________________________________________________________
 ____________________________________________________________
      The following are your tasks
@@ -780,10 +780,10 @@ ____________________________________________________________
 Greetings. Altair, at your service. How may I be of assistance?
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use: bye.
+    I'm afraid that won't do. Please use: bye.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use: list.
+    I'm afraid that won't do. Please use: list.
 ____________________________________________________________
 ____________________________________________________________
     Very well. I shall be here when next you require me.
@@ -853,7 +853,7 @@ ____________________________________________________________
      Nothing of that description turns up, I'm afraid.
 ____________________________________________________________
 ____________________________________________________________
-    I'm afraid that won't do — Please use: find <keyword>.
+    I'm afraid that won't do. Please use: find <keyword>.
 ____________________________________________________________
 ____________________________________________________________
     Consider it done. I have removed the following:

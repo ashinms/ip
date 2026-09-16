@@ -84,36 +84,35 @@ public class AltairTest {
 
         String response = altair.getResponse("todo");
 
-        assertEquals("    I'm afraid that won't do — I'm afraid the description of a todo cannot be empty.",
-                response);
+        assertEquals("    I'm afraid that won't do. The description of a todo cannot be empty.", response);
         assertEquals(List.of(), savedLines());
     }
 
     @Test
     public void getResponse_deadlineWithoutDate_returnsExplanation() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — A deadline needs a date after /by.",
+        assertEquals("    I'm afraid that won't do. A deadline needs a date after /by.",
                 altair.getResponse("deadline return book"));
     }
 
     @Test
     public void getResponse_deadlineWithUnparseableDate_returnsFormatHint() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — A deadline date must use yyyy-MM-dd format.",
+        assertEquals("    I'm afraid that won't do. A deadline date must use yyyy-MM-dd format.",
                 altair.getResponse("deadline return book /by 15-10-2019"));
     }
 
     @Test
     public void getResponse_unknownCommand_returnsExplanation() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — I do not understand your command. Try again, perhaps?",
+        assertEquals("    I'm afraid that won't do. I do not understand your command. Try again, perhaps?",
                 altair.getResponse("blah"));
     }
 
     @Test
     public void getResponse_descriptionWithPipe_isRejected() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — Task details cannot contain the '|' character.",
+        assertEquals("    I'm afraid that won't do. Task details cannot contain the '|' character.",
                 altair.getResponse("todo bad | data"));
     }
 
@@ -191,7 +190,7 @@ public class AltairTest {
     @Test
     public void getResponse_listWithArgument_isRejected() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — Please use: list.", altair.getResponse("list now"));
+        assertEquals("    I'm afraid that won't do. Please use: list.", altair.getResponse("list now"));
     }
 
     @Test
@@ -216,7 +215,7 @@ public class AltairTest {
     @Test
     public void getResponse_findWithoutKeyword_returnsUsageHint() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — Please use: find <keyword>.", altair.getResponse("find"));
+        assertEquals("    I'm afraid that won't do. Please use: find <keyword>.", altair.getResponse("find"));
     }
 
     // ----- mark, unmark, delete -----
@@ -265,7 +264,7 @@ public class AltairTest {
         Altair altair = newAltair();
         altair.getResponse("todo read book");
 
-        assertEquals("    I'm afraid that won't do — That task number is not in your list.",
+        assertEquals("    I'm afraid that won't do. That task number is not in your list.",
                 altair.getResponse("mark 0"));
         assertEquals("     The following are your tasks\n"
                 + "     1.[T][ ] read book", altair.getResponse("list"));
@@ -275,14 +274,14 @@ public class AltairTest {
     public void getResponse_deleteWithNonNumericArgument_isRejected() {
         Altair altair = newAltair();
         altair.getResponse("todo read book");
-        assertEquals("    I'm afraid that won't do — Please use a valid task number.",
+        assertEquals("    I'm afraid that won't do. Please use a valid task number.",
                 altair.getResponse("delete second"));
     }
 
     @Test
     public void getResponse_markWithoutNumber_returnsUsageHint() {
         Altair altair = newAltair();
-        assertEquals("    I'm afraid that won't do — Please use: mark <task number>.", altair.getResponse("mark"));
+        assertEquals("    I'm afraid that won't do. Please use: mark <task number>.", altair.getResponse("mark"));
     }
 
     // ----- bye / exit signalling -----
@@ -301,7 +300,7 @@ public class AltairTest {
     public void getResponse_byeWithArgument_isRejectedAndDoesNotExit() {
         Altair altair = newAltair();
 
-        assertEquals("    I'm afraid that won't do — Please use: bye.", altair.getResponse("bye now"));
+        assertEquals("    I'm afraid that won't do. Please use: bye.", altair.getResponse("bye now"));
         assertFalse(altair.isExit());
     }
 

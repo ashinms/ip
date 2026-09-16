@@ -320,7 +320,7 @@ public class Altair {
     private static Todo createTodo(String command) throws AltairException {
         String description = textAfterCommand(command, "todo");
         if (description.isEmpty()) {
-            throw new AltairException("I'm afraid the description of a todo cannot be empty.");
+            throw new AltairException("The description of a todo cannot be empty.");
         }
         validateStorableText(description);
         return new Todo(description);
@@ -341,7 +341,7 @@ public class Altair {
         String[] words = splitWords(remainder);
         int byIndex = findMarker(words, "/by", 0);
         if (words.length == 0 || byIndex == 0) {
-            throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
+            throw new AltairException("The description of a deadline cannot be empty.");
         }
         if (byIndex < 0) {
             throw new AltairException("A deadline needs a date after /by.");
@@ -350,7 +350,7 @@ public class Altair {
         String description = joinWords(words, 0, byIndex);
         String byText = joinWords(words, byIndex + 1, words.length);
         if (description.isEmpty()) {
-            throw new AltairException("I'm afraid the description of a deadline cannot be empty.");
+            throw new AltairException("The description of a deadline cannot be empty.");
         }
         if (byText.isEmpty()) {
             throw new AltairException("A deadline needs a date after /by.");
@@ -376,7 +376,7 @@ public class Altair {
         int fromIndex = findMarker(words, "/from", 0);
         int toIndex = findMarker(words, "/to", fromIndex < 0 ? 0 : fromIndex + 1);
         if (words.length == 0 || fromIndex == 0) {
-            throw new AltairException("I'm afraid the description of an event cannot be empty.");
+            throw new AltairException("The description of an event cannot be empty.");
         }
         if (fromIndex < 0 || toIndex < 0 || toIndex <= fromIndex + 1) {
             throw new AltairException("An event needs /from and /to dates.");
@@ -386,7 +386,7 @@ public class Altair {
         String fromText = joinWords(words, fromIndex + 1, toIndex);
         String toText = joinWords(words, toIndex + 1, words.length);
         if (description.isEmpty()) {
-            throw new AltairException("I'm afraid the description of an event cannot be empty.");
+            throw new AltairException("The description of an event cannot be empty.");
         }
         if (fromText.isEmpty() || toText.isEmpty()) {
             throw new AltairException("An event needs /from and /to dates.");
