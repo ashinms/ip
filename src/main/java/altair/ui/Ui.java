@@ -141,8 +141,7 @@ public class Ui {
      */
     public static String formatWelcome() {
         return SEPARATOR + "\n" + BANNER + "\n"
-                + "Greetings, I am Altair." + "\n"
-                + "How may I help you?" + "\n" + SEPARATOR;
+                + "Greetings. Altair, at your service. How may I be of assistance?" + "\n" + SEPARATOR;
     }
 
     /**
@@ -152,7 +151,7 @@ public class Ui {
      * @return the indented explanation.
      */
     public static String formatError(String message) {
-        return "    " + message;
+        return "    I'm afraid that won't do. " + message;
     }
 
     /**
@@ -161,7 +160,7 @@ public class Ui {
      * @return the farewell text.
      */
     public static String formatGoodbye() {
-        return "    Goodbye. Let me know when you need me again.";
+        return "    Very well. I shall be here when next you require me.";
     }
 
     /**
@@ -186,7 +185,7 @@ public class Ui {
      */
     public static String formatFoundTasks(List<Task> tasks) {
         if (tasks.isEmpty()) {
-            return "     No matching tasks in your list.";
+            return "     Nothing of that description turns up, I'm afraid.";
         }
         StringBuilder text = new StringBuilder("     Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
@@ -203,7 +202,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public static String formatAdded(Task task, int taskCount) {
-        return "    Copy. Your task has been added:\n"
+        return "    Alright, I have added it to your list:\n"
                 + "      " + task + "\n"
                 + "    Now you have " + taskCount + " tasks in the list.";
     }
@@ -216,7 +215,7 @@ public class Ui {
      * @return the warning text, ending with a y/n prompt.
      */
     public static String formatDuplicateWarning(Task existing) {
-        return "    This looks like a task you already have:\n"
+        return "    I believe this already appears on the books:\n"
                 + "      " + existing + "\n"
                 + "    Add it anyway? (y/n)";
     }
@@ -228,7 +227,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public static String formatDuplicateDeclined() {
-        return "    OK, I have not added that task.";
+        return "    Very well. I shall leave it be.";
     }
 
     /**
@@ -238,7 +237,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public static String formatMarked(Task task) {
-        return "     Task marked as completed:\n"
+        return "     Duly noted. Marked as complete:\n"
                 + "       " + task;
     }
 
@@ -249,7 +248,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public static String formatUnmarked(Task task) {
-        return "     OK, I've marked this task as not done yet:\n"
+        return "     As you wish. Returned to the unfinished pile:\n"
                 + "       " + task;
     }
 
@@ -261,7 +260,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public static String formatDeleted(Task task, int taskCount) {
-        return "    Noted. I've removed this task:\n"
+        return "    Consider it done. I have removed the following:\n"
                 + "      " + task + "\n"
                 + "    Now you have " + taskCount + " tasks in the list.";
     }
