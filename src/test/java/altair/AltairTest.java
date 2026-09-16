@@ -52,7 +52,7 @@ public class AltairTest {
 
         String response = altair.getResponse("todo buy milk");
 
-        assertEquals("    Copy. Your task has been added:\n"
+        assertEquals("    Alright, I have added it to your list:\n"
                 + "      [T][ ] buy milk\n"
                 + "    Now you have 1 tasks in the list.", response);
         assertEquals(List.of("T | 0 | buy milk"), savedLines());
@@ -84,35 +84,36 @@ public class AltairTest {
 
         String response = altair.getResponse("todo");
 
-        assertEquals("    I'm afraid the description of a todo cannot be empty.", response);
+        assertEquals("    I'm afraid that won't do — I'm afraid the description of a todo cannot be empty.",
+                response);
         assertEquals(List.of(), savedLines());
     }
 
     @Test
     public void getResponse_deadlineWithoutDate_returnsExplanation() {
         Altair altair = newAltair();
-        assertEquals("    A deadline needs a date after /by.",
+        assertEquals("    I'm afraid that won't do — A deadline needs a date after /by.",
                 altair.getResponse("deadline return book"));
     }
 
     @Test
     public void getResponse_deadlineWithUnparseableDate_returnsFormatHint() {
         Altair altair = newAltair();
-        assertEquals("    A deadline date must use yyyy-MM-dd format.",
+        assertEquals("    I'm afraid that won't do — A deadline date must use yyyy-MM-dd format.",
                 altair.getResponse("deadline return book /by 15-10-2019"));
     }
 
     @Test
     public void getResponse_unknownCommand_returnsExplanation() {
         Altair altair = newAltair();
-        assertEquals("    I do not understand your command. Try again, perhaps?",
+        assertEquals("    I'm afraid that won't do — I do not understand your command. Try again, perhaps?",
                 altair.getResponse("blah"));
     }
 
     @Test
     public void getResponse_descriptionWithPipe_isRejected() {
         Altair altair = newAltair();
-        assertEquals("    Task details cannot contain the '|' character.",
+        assertEquals("    I'm afraid that won't do — Task details cannot contain the '|' character.",
                 altair.getResponse("todo bad | data"));
     }
 
@@ -125,7 +126,7 @@ public class AltairTest {
 
         String response = altair.getResponse("todo buy milk");
 
-        assertEquals("    This looks like a task you already have:\n"
+        assertEquals("    I believe this already appears on the books:\n"
                 + "      [T][ ] buy milk\n"
                 + "    Add it anyway? (y/n)", response);
         assertEquals(List.of("T | 0 | buy milk"), savedLines());
@@ -139,7 +140,7 @@ public class AltairTest {
 
         String response = altair.getResponse("Y");
 
-        assertEquals("    Copy. Your task has been added:\n"
+        assertEquals("    Alright, I have added it to your list:\n"
                 + "      [T][ ] buy milk\n"
                 + "    Now you have 2 tasks in the list.", response);
         assertEquals(List.of("T | 0 | buy milk", "T | 0 | buy milk"), savedLines());
@@ -151,7 +152,7 @@ public class AltairTest {
         altair.getResponse("todo buy milk");
         altair.getResponse("todo buy milk");
 
-        assertEquals("    OK, I have not added that task.", altair.getResponse("no"));
+        assertEquals("    Very well. I shall leave it be.", altair.getResponse("no"));
         assertEquals("     The following are your tasks\n"
                 + "     1.[T][ ] buy milk", altair.getResponse("list"));
     }
@@ -190,7 +191,7 @@ public class AltairTest {
     @Test
     public void getResponse_listWithArgument_isRejected() {
         Altair altair = newAltair();
-        assertEquals("    Please use: list.", altair.getResponse("list now"));
+        assertEquals("    I'm afraid that won't do — Please use: list.", altair.getResponse("list now"));
     }
 
     @Test
@@ -209,13 +210,13 @@ public class AltairTest {
     public void getResponse_findWithNoMatches_saysSo() {
         Altair altair = newAltair();
         altair.getResponse("todo read book");
-        assertEquals("     No matching tasks in your list.", altair.getResponse("find xyzzy"));
+        assertEquals("     Nothing of that description turns up, I'm afraid.", altair.getResponse("find xyzzy"));
     }
 
     @Test
     public void getResponse_findWithoutKeyword_returnsUsageHint() {
         Altair altair = newAltair();
-        assertEquals("    Please use: find <keyword>.", altair.getResponse("find"));
+        assertEquals("    I'm afraid that won't do — Please use: find <keyword>.", altair.getResponse("find"));
     }
 
     // ----- mark, unmark, delete -----
@@ -227,7 +228,7 @@ public class AltairTest {
 
         String response = altair.getResponse("mark 1");
 
-        assertEquals("     Task marked as completed:\n"
+        assertEquals("     Duly noted. Marked as complete:\n"
                 + "       [T][X] read book", response);
         assertEquals(List.of("T | 1 | read book"), savedLines());
     }
@@ -238,7 +239,7 @@ public class AltairTest {
         altair.getResponse("todo read book");
         altair.getResponse("mark 1");
 
-        assertEquals("     OK, I've marked this task as not done yet:\n"
+        assertEquals("     As you wish. Returned to the unfinished pile:\n"
                 + "       [T][ ] read book", altair.getResponse("unmark 1"));
     }
 
@@ -251,7 +252,7 @@ public class AltairTest {
 
         String response = altair.getResponse("delete 2");
 
-        assertEquals("    Noted. I've removed this task:\n"
+        assertEquals("    Consider it done. I have removed the following:\n"
                 + "      [T][ ] b\n"
                 + "    Now you have 2 tasks in the list.", response);
         assertEquals("     The following are your tasks\n"
@@ -264,7 +265,8 @@ public class AltairTest {
         Altair altair = newAltair();
         altair.getResponse("todo read book");
 
-        assertEquals("    That task number is not in your list.", altair.getResponse("mark 0"));
+        assertEquals("    I'm afraid that won't do — That task number is not in your list.",
+                altair.getResponse("mark 0"));
         assertEquals("     The following are your tasks\n"
                 + "     1.[T][ ] read book", altair.getResponse("list"));
     }
@@ -273,13 +275,14 @@ public class AltairTest {
     public void getResponse_deleteWithNonNumericArgument_isRejected() {
         Altair altair = newAltair();
         altair.getResponse("todo read book");
-        assertEquals("    Please use a valid task number.", altair.getResponse("delete second"));
+        assertEquals("    I'm afraid that won't do — Please use a valid task number.",
+                altair.getResponse("delete second"));
     }
 
     @Test
     public void getResponse_markWithoutNumber_returnsUsageHint() {
         Altair altair = newAltair();
-        assertEquals("    Please use: mark <task number>.", altair.getResponse("mark"));
+        assertEquals("    I'm afraid that won't do — Please use: mark <task number>.", altair.getResponse("mark"));
     }
 
     // ----- bye / exit signalling -----
@@ -289,7 +292,7 @@ public class AltairTest {
         Altair altair = newAltair();
 
         assertFalse(altair.isExit());
-        assertEquals("    Goodbye. Let me know when you need me again.",
+        assertEquals("    Very well. I shall be here when next you require me.",
                 altair.getResponse("bye"));
         assertTrue(altair.isExit());
     }
@@ -298,7 +301,7 @@ public class AltairTest {
     public void getResponse_byeWithArgument_isRejectedAndDoesNotExit() {
         Altair altair = newAltair();
 
-        assertEquals("    Please use: bye.", altair.getResponse("bye now"));
+        assertEquals("    I'm afraid that won't do — Please use: bye.", altair.getResponse("bye now"));
         assertFalse(altair.isExit());
     }
 
