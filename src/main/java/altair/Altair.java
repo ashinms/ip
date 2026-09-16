@@ -118,7 +118,7 @@ public class Altair {
      * @return the greeting text.
      */
     public String getGreeting() {
-        String greeting = "Greetings, I am Altair.\nHow may I help you?";
+        String greeting = "Greetings. Altair, at your service. How may I be of assistance?";
         if (loadError != null) {
             return loadError + "\n" + greeting;
         }
