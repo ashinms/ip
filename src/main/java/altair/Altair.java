@@ -173,6 +173,10 @@ public class Altair {
      * Runs the text UI: loads the saved tasks, greets the user, then reads and
      * handles one command per line until {@code bye} or end of input.
      *
+     * <p>A start-up load failure is shown as its own message rather than
+     * stopping the program: the task list already falls back to empty in that
+     * case, so the session continues normally, matching how the GUI behaves.</p>
+     *
      * @param args command-line arguments; not used.
      */
     public static void main(String[] args) {
@@ -180,8 +184,9 @@ public class Altair {
         Ui ui = new Ui();
 
         if (altair.getLoadError() != null) {
+            ui.showLine();
             ui.showError(altair.getLoadError());
-            return;
+            ui.showLine();
         }
 
         ui.showWelcome();

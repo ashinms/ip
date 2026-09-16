@@ -211,3 +211,9 @@ There is nothing to save by hand. Altair writes the whole task list to
 `./data/altair.txt` after every add, mark, unmark, delete, and reads it back when
 it starts. The file and its folder are created automatically the first time you
 add a task.
+
+If `./data/altair.txt` is missing, Altair simply starts with an empty task list.
+If the file exists but is corrupted (a row Altair cannot read) or cannot be read
+at all (for example, a permissions problem), Altair shows an error message
+explaining what went wrong and still starts normally with an empty task list, so
+a bad save file never leaves you unable to use the app.

@@ -12,6 +12,8 @@ This is a project template for a greenfield Java project. It's named after the J
   for confirmation before adding it, so accidental re-entry does not silently
   create a second copy.
 - Automatic save to `./data/altair.txt` after every change, reloaded on start-up.
+  A missing, corrupted, or unreadable save file does not stop the app: Altair
+  reports what went wrong and still starts normally with an empty task list.
 - Runs as a JavaFX GUI or as a plain text UI in the terminal; both share the same
   command handling.
 

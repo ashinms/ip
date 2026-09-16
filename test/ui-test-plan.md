@@ -14,7 +14,7 @@ and console tests are simpler to run and diff exactly.
 - Persistence: Successful task-list changes rewrite `./data/altair.txt`; the file is checked separately after the UI session because the console does not display save confirmations. Event dates are stored as one combined field.
 - Isolation: Test cases 1–9 and 12–17 finish with an empty saved task list. Test case 10 intentionally leaves one completed task for test case 11 to load.
 - Missing data: Starting without `./data/altair.txt` is treated as an empty task list, and the first save creates the missing `./data/` folder.
-- Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace.
+- Corrupted data: A malformed non-empty row is rejected with a line-specific error and no Java stack trace. This applies at start-up too: a corrupted or unreadable save file makes the console print the error (framed by divider lines, before the greeting) and then continue running normally with an empty task list, instead of exiting. This start-up case is not covered as a runnable test below because the runner only supports `Command`/`Inputs`/`Expected output` steps, with no way to seed a corrupted file beforehand.
 - Duplicates: adding a `todo`/`deadline`/`event` whose description matches a task already in the list (case-insensitive, ignoring extra spacing) prompts `Add it anyway? (y/n)` instead of adding it. `y`/`yes` adds and saves it; `n`/`no` leaves the list unchanged; any other input cancels the pending add and is processed as a new command instead.
 
 ## Test case 1: Start and exit
