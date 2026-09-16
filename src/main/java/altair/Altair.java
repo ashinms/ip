@@ -368,7 +368,8 @@ public class Altair {
      *
      * @param command the trimmed command entered by the user.
      * @return the new event.
-     * @throws AltairException if the description or a date is missing or malformed, or a field contains '|'.
+     * @throws AltairException if the description or a date is missing or malformed, a field contains '|',
+     *     or the start date is after the end date.
      */
     private static Event createEvent(String command) throws AltairException {
         String remainder = textAfterCommand(command, "event");
@@ -394,8 +395,13 @@ public class Altair {
         validateStorableText(description);
         validateStorableText(fromText);
         validateStorableText(toText);
-        return new Event(description, parseDate(fromText, "An event start date"),
-                parseDate(toText, "An event end date"));
+
+        LocalDate fromDate = parseDate(fromText, "An event start date");
+        LocalDate toDate = parseDate(toText, "An event end date");
+        if (fromDate.isAfter(toDate)) {
+            throw new AltairException("An event's start date cannot be after its end date.");
+        }
+        return new Event(description, fromDate, toDate);
     }
 
     /**

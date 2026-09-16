@@ -79,6 +79,16 @@ public class AltairTest {
     }
 
     @Test
+    public void getResponse_eventFromAfterTo_returnsExplanationAndSavesNothing() throws Exception {
+        Altair altair = newAltair();
+
+        String response = altair.getResponse("event camp /from 2019-10-17 /to 2019-10-16");
+
+        assertEquals("    I'm afraid that won't do. An event's start date cannot be after its end date.", response);
+        assertEquals(List.of(), savedLines());
+    }
+
+    @Test
     public void getResponse_emptyTodoDescription_returnsExplanationAndSavesNothing() throws Exception {
         Altair altair = newAltair();
 
