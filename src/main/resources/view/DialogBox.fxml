@@ -18,8 +18,8 @@
         <Insets top="6.0" right="10.0" bottom="6.0" left="10.0" />
     </padding>
     <children>
-        <Label fx:id="dialog" wrapText="true" maxWidth="260.0" />
-        <ImageView fx:id="displayPicture" fitHeight="48.0" fitWidth="48.0"
+        <Label fx:id="dialog" wrapText="true" />
+        <ImageView fx:id="displayPicture" fitHeight="36.0" fitWidth="36.0"
                    preserveRatio="true" />
     </children>
 </fx:root>

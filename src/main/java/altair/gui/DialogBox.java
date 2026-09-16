@@ -3,6 +3,8 @@ package altair.gui;
 import java.io.IOException;
 import java.util.Collections;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,6 +25,9 @@ import javafx.scene.layout.HBox;
  * into the window like any other node.</p>
  */
 public class DialogBox extends HBox {
+
+    /** How much of the conversation list's width a bubble may use. */
+    private static final double BUBBLE_WIDTH_RATIO = 0.72;
 
     /** The bubble text. */
     @FXML
@@ -64,14 +69,32 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Binds this bubble's maximum width to a proportion of the conversation
+     * list's width, so it uses more of a wider window instead of clipping at
+     * a fixed pixel width.
+     *
+     * @param containerWidth the width property of the list this bubble sits in.
+     */
+    public void bindBubbleWidth(ObservableDoubleValue containerWidth) {
+        dialog.maxWidthProperty().bind(Bindings.multiply(containerWidth, BUBBLE_WIDTH_RATIO));
+    }
+
+    /**
      * Creates a right-aligned dialog box for something the user typed.
      *
+     * <p>The conversation is between the user and the app, not two humans, so
+     * only Altair keeps an avatar; the user's bubble is shown on its own.</p>
+     *
      * @param text the user's message.
-     * @param image the user's avatar.
+     * @param image the user's avatar; loaded but not shown.
      * @return the dialog box.
      */
     public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox box = new DialogBox(text, image);
+        box.dialog.getStyleClass().add("bubble-user");
+        box.displayPicture.setVisible(false);
+        box.displayPicture.setManaged(false);
+        return box;
     }
 
     /**
@@ -82,8 +105,22 @@ public class DialogBox extends HBox {
      * @return the dialog box.
      */
     public static DialogBox getAltairDialog(String text, Image image) {
+        return getAltairDialog(text, image, false);
+    }
+
+    /**
+     * Creates a left-aligned dialog box for a reply from Altair, optionally
+     * flagged as an error so it can be styled differently.
+     *
+     * @param text Altair's reply.
+     * @param image Altair's avatar.
+     * @param isError whether the reply is an error message.
+     * @return the dialog box.
+     */
+    public static DialogBox getAltairDialog(String text, Image image, boolean isError) {
         DialogBox box = new DialogBox(text, image);
         box.flip();
+        box.dialog.getStyleClass().add(isError ? "bubble-error" : "bubble-altair");
         return box;
     }
 }

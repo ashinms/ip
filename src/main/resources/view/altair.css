@@ -1,0 +1,77 @@
+/*
+ * Dark theme for the Altair chat window.
+ *
+ * Bubble colors echo the existing avatar art: a muted blue for the user
+ * (DaUser.png is #2e86c1) and a muted purple for Altair (DaAltair.png is
+ * #6c3a9e). Error replies from Altair override the bubble background with
+ * a red tint and a left border instead of the usual purple tint.
+ */
+
+#root-pane {
+    -fx-background-color: #1e1f26;
+}
+
+.scroll-pane, .scroll-pane .viewport {
+    -fx-background-color: #1e1f26;
+}
+
+.scroll-pane .content {
+    -fx-background-color: #1e1f26;
+}
+
+.label {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #e6e6eb;
+}
+
+.bubble-user, .bubble-altair {
+    -fx-background-radius: 12;
+    -fx-padding: 8 12 8 12;
+}
+
+.bubble-user {
+    -fx-background-color: #2e5f8a;
+}
+
+.bubble-altair {
+    -fx-background-color: #453757;
+}
+
+.bubble-error {
+    -fx-background-color: #5a2a2a;
+    -fx-border-color: #e05252;
+    -fx-border-width: 0 0 0 3;
+    -fx-background-insets: 0;
+}
+
+.text-field {
+    -fx-background-color: #2a2c36;
+    -fx-text-fill: #e6e6eb;
+    -fx-prompt-text-fill: #8b8d99;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+    -fx-font-size: 13px;
+}
+
+.text-field:focused {
+    -fx-background-color: #333642;
+    -fx-border-color: #7c5cbf;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+}
+
+.button {
+    -fx-background-color: #453757;
+    -fx-text-fill: #e6e6eb;
+    -fx-background-radius: 6;
+    -fx-font-size: 13px;
+}
+
+.button:hover {
+    -fx-background-color: #5a4870;
+}
+
+.button:pressed, .button:default:hover {
+    -fx-background-color: #6c3a9e;
+}

@@ -61,8 +61,9 @@ public class MainWindow {
      */
     public void setAltair(Altair altair) {
         this.altair = altair;
-        dialogContainer.getChildren().add(
-                DialogBox.getAltairDialog(altair.getGreeting(), altairImage));
+        DialogBox greeting = DialogBox.getAltairDialog(altair.getGreeting(), altairImage);
+        greeting.bindBubbleWidth(dialogContainer.widthProperty());
+        dialogContainer.getChildren().add(greeting);
     }
 
     /**
@@ -78,9 +79,11 @@ public class MainWindow {
         }
 
         String response = altair.getResponse(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getAltairDialog(response, altairImage));
+        DialogBox userDialog = DialogBox.getUserDialog(input, userImage);
+        DialogBox altairDialog = DialogBox.getAltairDialog(response, altairImage, altair.hasError());
+        userDialog.bindBubbleWidth(dialogContainer.widthProperty());
+        altairDialog.bindBubbleWidth(dialogContainer.widthProperty());
+        dialogContainer.getChildren().addAll(userDialog, altairDialog);
         userInput.clear();
 
         if (altair.isExit()) {

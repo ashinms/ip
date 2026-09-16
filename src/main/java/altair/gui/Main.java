@@ -36,6 +36,7 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane root = fxmlLoader.load();
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(Main.class.getResource("/view/altair.css").toExternalForm());
             stage.setScene(scene);
             stage.setTitle("Altair");
             stage.setMinWidth(400.0);
