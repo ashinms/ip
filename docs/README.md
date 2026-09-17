@@ -51,7 +51,7 @@ Example: `todo read book`
 Expected outcome:
 
 ```
-Copy. Your task has been added:
+Alright, I have added it to your list:
   [T][ ] read book
 Now you have 1 tasks in the list.
 ```
@@ -67,7 +67,7 @@ Example: `deadline return book /by 2025-10-15`
 Expected outcome:
 
 ```
-Copy. Your task has been added:
+Alright, I have added it to your list:
   [D][ ] return book (by: Oct 15 2025)
 Now you have 2 tasks in the list.
 ```
@@ -83,7 +83,7 @@ Example: `event orientation /from 2025-08-01 /to 2025-08-03`
 Expected outcome:
 
 ```
-Copy. Your task has been added:
+Alright, I have added it to your list:
   [E][ ] orientation (from: Aug 01 2025 to: Aug 03 2025)
 Now you have 3 tasks in the list.
 ```
@@ -104,7 +104,7 @@ makes them the same task or not.
 Example: adding `buy milk` a second time.
 
 ```
-This looks like a task you already have:
+I believe this already appears on the books:
   [T][ ] buy milk
 Add it anyway? (y/n)
 ```
@@ -112,7 +112,7 @@ Add it anyway? (y/n)
 Answer `y` or `yes` to add it anyway, or `n`/`no` to leave the list unchanged:
 
 ```
-OK, I have not added that task.
+Very well. I shall leave it be.
 ```
 
 Typing anything else instead of an answer (including a new command) drops the
@@ -145,7 +145,7 @@ Example: `mark 1`
 Expected outcome:
 
 ```
-Task marked as completed:
+Duly noted. Marked as complete:
   [T][X] read book
 ```
 
@@ -154,7 +154,7 @@ Example: `unmark 1`
 Expected outcome:
 
 ```
-OK, I've marked this task as not done yet:
+As you wish. Returned to the unfinished pile:
   [T][ ] read book
 ```
 
@@ -169,7 +169,7 @@ Example: `delete 2`
 Expected outcome:
 
 ```
-Noted. I've removed this task:
+Consider it done. I have removed the following:
   [D][ ] return book (by: Oct 15 2025)
 Now you have 2 tasks in the list.
 ```
@@ -192,7 +192,7 @@ Here are the matching tasks in your list:
 If nothing matches:
 
 ```
-No matching tasks in your list.
+Nothing of that description turns up, I'm afraid.
 ```
 
 ## Exiting: `bye`
@@ -202,7 +202,7 @@ Format: `bye`
 Expected outcome:
 
 ```
-Goodbye. Let me know when you need me again.
+Very well. I shall be here when next you require me.
 ```
 
 ## Saving the data
